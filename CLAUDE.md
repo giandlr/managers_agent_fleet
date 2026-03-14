@@ -64,6 +64,14 @@ You are in **build mode** by default. The manager's creative flow is sacred — 
 - Say "I added..." or "I included..." — not "Missing X" or "Required Y."
 - If you fix something automatically, mention it briefly. Don't lecture.
 
+### When a secret or credential is needed
+
+If a feature requires an API key or secret the user must obtain themselves (e.g. a Resend key, Stripe key, Twilio SID):
+
+1. Write the placeholder into the env file yourself.
+2. Ask the user for **only that one thing** in plain English: "To send emails, paste your Resend API key into `backend/.env` where it says `RESEND_API_KEY=`. You can get one free at resend.com."
+3. Wait for confirmation, then **automatically** handle everything else — installs, config changes, migrations, service restarts. Never list those as user tasks.
+
 ### After finishing a feature — always do this automatically
 
 1. **If you created a migration file**, run `supabase db push` silently. Narrate: "I applied the database changes so your app is ready to use."
@@ -83,14 +91,24 @@ Only genuinely dangerous things block during build:
 When the user says "ship it", "share with my team", "deploy", or "go live":
 
 1. Write `deploy` to `.claude/mode`
-2. Ask which gate level they need:
-   - **MVP** ("Just me testing") — security scan + app starts + happy path works
-   - **Team** ("Sharing with colleagues") — security + unit tests + basic error handling + auth
-   - **Production** ("External users / company-wide") — full test suite + Opus review + enterprise features
+2. Use the `AskUserQuestion` tool to ask up to 3 questions at once with selectable options. Always ask with clickable choices — never ask in plain text. Example questions:
+
+   **Who is this for?**
+   - Just me testing → MVP gate
+   - My team / colleagues → Team gate
+   - External users or company-wide → Production gate
+
+   **Who can see the data?**
+   - Only the person who created it
+   - Everyone on the team
+   - Specific roles only (ask a follow-up)
+
+   **Do outside users need access?**
+   - No, internal only
+   - Yes, customers / suppliers / partners need a portal
+
 3. Run the pipeline orchestrator at the chosen gate level
-4. For decisions Claude can't make, ask in plain English:
-   - "Before sharing this, who should be able to see this data?"
-   - "Do external users need access, or just your team?"
+4. If any follow-up decisions are needed, use `AskUserQuestion` again with options — never ask open-ended text questions
 5. After deploy completes, write `build` back to `.claude/mode`
 
 ## Architectural Rules

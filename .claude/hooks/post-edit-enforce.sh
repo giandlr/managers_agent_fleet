@@ -5,14 +5,15 @@
 # Triggered on: PostToolUse Write|Edit
 # Exit 0 = pass/warn, Exit 2 = block (Claude must fix)
 
+# Safety: unexpected errors allow the command through (intentional exit 2 still blocks)
+# Must be first — catches errors from source and all subsequent commands
+trap 'exit 0' ERR
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/mode.sh"
 
 AUDIT_LOG=".claude/audit.log"
 mkdir -p "$(dirname "$AUDIT_LOG")" 2>/dev/null || true
-
-# Safety: unexpected errors allow the command through (intentional exit 2 still blocks)
-trap 'exit 0' ERR
 
 # Read tool input from stdin
 INPUT=$(cat)

@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/stop-final-audit.sh"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && bash .claude/hooks/stop-final-audit.sh"
           }
         ]
       }

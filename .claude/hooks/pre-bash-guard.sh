@@ -3,14 +3,14 @@
 # Triggered on: PreToolUse Bash
 # Exit 0 = allow, Exit 2 = block
 
+# Safety: any unexpected error allows the command through (must be first)
+trap 'exit 0' ERR
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/mode.sh"
 
 AUDIT_LOG=".claude/audit.log"
 mkdir -p "$(dirname "$AUDIT_LOG")" 2>/dev/null || true
-
-# Safety: any unexpected error allows the command through
-trap 'exit 0' ERR
 
 # Read tool input from stdin
 INPUT=$(cat)
