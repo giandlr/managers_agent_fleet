@@ -701,138 +701,8 @@
       </div>
     </div>
 
-    <!-- ==================== SLIDE 3: BUILD FREELY, DEPLOY SAFELY ==================== -->
-    <div class="slide" data-slide="2">
-      <div class="slide-scroll">
-        <h2>Build Freely, <span class="highlight-green">Deploy Safely</span></h2>
-        <p class="subtitle" style="margin-bottom:20px;">The system has two modes. You're always in Build mode by default. Deploy mode activates when you're ready to share.</p>
-
-        <div class="grid-2" style="gap: 20px;">
-          <div class="card c-green" style="padding: 24px;">
-            <span class="card-label" style="color: #1a8a00;">Build Mode (default)</span>
-            <h3>You build freely</h3>
-            <p class="mb-8">This is your creative workspace. Only security issues are blocked &mdash; everything else, Claude handles quietly in the background.</p>
-            <ul class="bullet-list mt-8">
-              <li>Claude writes code and auto-fixes quality issues as it goes</li>
-              <li>Claude explains what it did in plain English after each step</li>
-              <li>No pipeline runs, no formal reviews &mdash; just fast iteration</li>
-              <li>Security problems are still caught immediately (passwords in code, dangerous commands)</li>
-            </ul>
-            <div class="narration-bubble mt-16">
-              <span class="narration-label">Claude says</span>
-              "I built the team dashboard with a bar chart showing monthly performance. I added a loading indicator so users see something while the data loads, and I made sure each manager can only see their own team's data."
-            </div>
-          </div>
-          <div class="card c-blue" style="padding: 24px;">
-            <span class="card-label">Deploy Mode (when you're ready)</span>
-            <h3>Quality checks activate</h3>
-            <p class="mb-8">When you say "ship it" or "share with my team," Claude switches to deploy mode and runs the appropriate level of checks.</p>
-            <ul class="bullet-list mt-8">
-              <li>Claude asks: "Is this just for you, your team, or external users?"</li>
-              <li>Runs the right level of validation for your answer</li>
-              <li>If everything passes, a changelog entry is created automatically</li>
-              <li>After the pipeline finishes, you're back in build mode</li>
-            </ul>
-            <div class="narration-bubble mt-16">
-              <span class="narration-label">Claude says</span>
-              "I'm running checks to make sure this is ready for your team. Verifying security... checking that all features work... making sure errors are handled properly. Everything passed &mdash; it's ready to share."
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE 4: THREE GATE LEVELS ==================== -->
-    <div class="slide" data-slide="3">
-      <div class="slide-scroll">
-        <h2>Three Levels of <span class="highlight-purple">Validation</span></h2>
-        <p class="subtitle" style="margin-bottom:20px;">When you deploy, Claude asks who it's for and runs the right level of checks. Start simple and level up as your project grows.</p>
-
-        <div class="grid-3" style="gap: 16px;">
-          <div class="card c-green" style="padding: 24px;">
-            <span class="card-label" style="color: #1a8a00;">MVP</span>
-            <h3>"Just me testing"</h3>
-            <p class="mb-8">A quick check to make sure nothing is broken or insecure. Takes about a minute.</p>
-            <ul class="bullet-list mt-8">
-              <li>Security scan &mdash; no passwords or secrets in code</li>
-              <li>App starts without errors</li>
-              <li>The main feature works end-to-end</li>
-            </ul>
-            <div class="sm mt-16" style="font-style: italic;">Say: "Let me test this" or "Quick check"</div>
-          </div>
-          <div class="card c-blue" style="padding: 24px;">
-            <span class="card-label">Team</span>
-            <h3>"Sharing with colleagues"</h3>
-            <p class="mb-8">Validates that the app is reliable enough for other people to use. Takes a few minutes.</p>
-            <ul class="bullet-list mt-8">
-              <li>Everything in MVP, plus:</li>
-              <li>All tests pass with reasonable coverage</li>
-              <li>Errors are handled gracefully (no blank screens)</li>
-              <li>Login and permissions work correctly</li>
-            </ul>
-            <div class="sm mt-16" style="font-style: italic;">Say: "Share with my team" or "Ship it to the team"</div>
-          </div>
-          <div class="card c-purple" style="padding: 24px;">
-            <span class="card-label">Production</span>
-            <h3>"External users"</h3>
-            <p class="mb-8">Full enterprise validation. Performance testing, independent code review, everything. Takes 5&ndash;10 minutes.</p>
-            <ul class="bullet-list mt-8">
-              <li>Everything in Team, plus:</li>
-              <li>Full test suite with high coverage</li>
-              <li>Performance validated &mdash; fast response times</li>
-              <li>Independent AI code review (Opus)</li>
-              <li>All enterprise features present</li>
-            </ul>
-            <div class="sm mt-16" style="font-style: italic;">Say: "Ship to production" or "Ready for external users"</div>
-          </div>
-        </div>
-
-        <div class="big-quote mt-16">
-          You don't need to start at production level. Build your MVP, test it yourself, share it with your team, and
-          graduate to production when you're ready. The system grows with you.
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE 5: HOW IT WORKS ==================== -->
-    <div class="slide" data-slide="4">
-      <div class="slide-scroll">
-        <h2>How It Works</h2>
-        <p class="subtitle" style="margin-bottom:20px;">Layers of protection work silently. In build mode, only security guards are active. In deploy mode, everything kicks in.</p>
-
-        <div class="grid-2" style="gap: 12px;">
-          <div class="card c-purple">
-            <span class="card-label">Layer 1 &mdash; Rules</span>
-            <h3>Memory &amp; Standards</h3>
-            <p>Claude remembers the project's rules: which tech to use, how to structure code, what security patterns to follow. These rules are always loaded &mdash; you never need to repeat them.</p>
-          </div>
-          <div class="card c-orange">
-            <span class="card-label">Layer 2 &mdash; Guards</span>
-            <h3>Real-Time Protection</h3>
-            <p>Every time Claude writes code, security checks run instantly. In build mode, only dangerous patterns are blocked. In deploy mode, full quality checks activate. All messages are in plain English.</p>
-          </div>
-          <div class="card c-blue">
-            <span class="card-label">Layer 3 &mdash; Agents</span>
-            <h3>Specialist Workers</h3>
-            <p>Dedicated AI agents handle specific jobs in parallel: one builds the backend, another the frontend, others run tests and security scans &mdash; all at the same time.</p>
-          </div>
-          <div class="card c-green">
-            <span class="card-label">Layer 4 &mdash; Pipeline</span>
-            <h3>Deploy Validation</h3>
-            <p>When you deploy, the pipeline runs at your chosen gate level (MVP, Team, or Production). Only the checks appropriate for that level are executed.</p>
-          </div>
-        </div>
-
-        <div class="card c-red mt-16" style="text-align: center;">
-          <span class="card-label">Layer 5 &mdash; Independent Review (Production only)</span>
-          <h3>Opus Code Review</h3>
-          <p>At the production gate level, a separate senior AI (Claude Opus) reviews the code with <strong>zero knowledge</strong> of the development session. Like an independent auditor checking every change before it goes live.</p>
-        </div>
-      </div>
-    </div>
-
     <!-- ==================== SLIDE 6: YOUR WORKFLOW ==================== -->
-    <div class="slide" data-slide="5">
+    <div class="slide" data-slide="2">
       <div class="slide-scroll">
         <h2>Your Workflow</h2>
         <p class="subtitle" style="margin-bottom:16px;">This is everything you need to do. Seriously, that's it.</p>
@@ -872,8 +742,49 @@
       </div>
     </div>
 
+    <!-- ==================== SLIDE 3: BUILD FREELY, DEPLOY SAFELY ==================== -->
+    <div class="slide" data-slide="3">
+      <div class="slide-scroll">
+        <h2>Build Freely, <span class="highlight-green">Deploy Safely</span></h2>
+        <p class="subtitle" style="margin-bottom:20px;">The system has two modes. You're always in Build mode by default. Deploy mode activates when you're ready to share.</p>
+
+        <div class="grid-2" style="gap: 20px;">
+          <div class="card c-green" style="padding: 24px;">
+            <span class="card-label" style="color: #1a8a00;">Build Mode (default)</span>
+            <h3>You build freely</h3>
+            <p class="mb-8">This is your creative workspace. Only security issues are blocked &mdash; everything else, Claude handles quietly in the background.</p>
+            <ul class="bullet-list mt-8">
+              <li>Claude writes code and auto-fixes quality issues as it goes</li>
+              <li>Claude explains what it did in plain English after each step</li>
+              <li>No pipeline runs, no formal reviews &mdash; just fast iteration</li>
+              <li>Security problems are still caught immediately (passwords in code, dangerous commands)</li>
+            </ul>
+            <div class="narration-bubble mt-16">
+              <span class="narration-label">Claude says</span>
+              "I built the team dashboard with a bar chart showing monthly performance. I added a loading indicator so users see something while the data loads, and I made sure each manager can only see their own team's data."
+            </div>
+          </div>
+          <div class="card c-blue" style="padding: 24px;">
+            <span class="card-label">Deploy Mode (when you're ready)</span>
+            <h3>Quality checks activate</h3>
+            <p class="mb-8">When you say "ship it" or "share with my team," Claude switches to deploy mode and runs the appropriate level of checks.</p>
+            <ul class="bullet-list mt-8">
+              <li>Claude asks: "Is this just for you, your team, or external users?"</li>
+              <li>Runs the right level of validation for your answer</li>
+              <li>If everything passes, a changelog entry is created automatically</li>
+              <li>After the pipeline finishes, you're back in build mode</li>
+            </ul>
+            <div class="narration-bubble mt-16">
+              <span class="narration-label">Claude says</span>
+              "I'm running checks to make sure this is ready for your team. Verifying security... checking that all features work... making sure errors are handled properly. Everything passed &mdash; it's ready to share."
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== SLIDE: START WITH DISCOVERY ==================== -->
-    <div class="slide" data-slide="6">
+    <div class="slide" data-slide="4">
       <div class="slide-scroll">
         <h2>Start With <span class="highlight-purple">Discovery</span></h2>
         <p class="subtitle" style="margin-bottom:16px;">When you start a brand-new project, Claude asks a few quick questions before building. This takes about 2 minutes and saves hours of rework.</p>
@@ -903,7 +814,7 @@
     </div>
 
     <!-- ==================== SLIDE 7: INSTALLATION ==================== -->
-    <div class="slide" data-slide="7">
+    <div class="slide" data-slide="5">
       <div class="slide-scroll">
         <h2>Installation &mdash; One-Time Setup</h2>
         <p class="subtitle" style="margin-bottom:20px;">Before your first project, run a single setup command. After that, you never touch it again.</p>
@@ -977,7 +888,7 @@
     </div>
 
     <!-- ==================== SLIDE 8: WHAT BOOTSTRAP CREATES ==================== -->
-    <div class="slide" data-slide="8">
+    <div class="slide" data-slide="6">
       <div class="slide-scroll">
         <h2>What <span class="highlight-green">Bootstrap</span> Creates For You</h2>
         <p class="subtitle" style="margin-bottom:16px;">One command sets up your entire app. Here's everything that's ready when it finishes.</p>
@@ -1029,124 +940,8 @@
       </div>
     </div>
 
-    <!-- ==================== SLIDE 9: THE PIPELINE (DEPLOY MODE) ==================== -->
-    <div class="slide" data-slide="9">
-      <div class="slide-scroll">
-        <h2>The Deploy Pipeline &mdash; What Runs When You Ship</h2>
-        <p class="subtitle" style="margin-bottom:16px;">When you say "ship it," the pipeline runs at your chosen level. Here's what the full production pipeline looks like:</p>
-
-        <div class="grid-4 mb-16">
-          <div class="layer-card" style="border-top: 3px solid var(--purple);">
-            <span class="layer-icon">&#x1f9ea;</span>
-            <h3>Unit Tests</h3>
-            <p>Does each individual piece of code work correctly on its own?</p>
-            <div class="sm mt-8"><span class="badge badge-blue" style="margin:0;">Team+</span></div>
-          </div>
-          <div class="layer-card" style="border-top: 3px solid var(--blue);">
-            <span class="layer-icon">&#x1f5a5;</span>
-            <h3>UI Tests</h3>
-            <p>Do user-facing screens and flows work in a real browser?</p>
-            <div class="sm mt-8"><span class="badge badge-purple" style="margin:0;">Production</span></div>
-          </div>
-          <div class="layer-card" style="border-top: 3px solid var(--green);">
-            <span class="layer-icon">&#x1f517;</span>
-            <h3>Integration Tests</h3>
-            <p>Do the API endpoints and database work together correctly?</p>
-            <div class="sm mt-8"><span class="badge badge-purple" style="margin:0;">Production</span></div>
-          </div>
-          <div class="layer-card" style="border-top: 3px solid var(--orange);">
-            <span class="layer-icon">&#x26a1;</span>
-            <h3>Performance Tests</h3>
-            <p>Is the app fast enough? Does it handle multiple users?</p>
-            <div class="sm mt-8"><span class="badge badge-purple" style="margin:0;">Production</span></div>
-          </div>
-        </div>
-
-        <div class="connect-visual">
-          <div class="connect-node" style="background: var(--bg-green); color: #1a8a00;">MVP: Security + Smoke</div>
-          <span class="connect-arrow">&rarr;</span>
-          <div class="connect-node" style="background: rgba(22,121,250,0.08); color: var(--blue);">Team: + Unit Tests</div>
-          <span class="connect-arrow">&rarr;</span>
-          <div class="connect-node" style="background: var(--bg-lavender); color: var(--purple);">Production: + All Tests + Opus</div>
-        </div>
-
-        <p class="sm mt-8" style="text-align: center;">Each level includes everything from the level before it. You choose the right level when you deploy.</p>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE 9: OPUS REVIEW ==================== -->
-    <div class="slide" data-slide="10">
-      <div class="slide-scroll">
-        <h2>The Opus Review &mdash; Your Independent Auditor</h2>
-        <p class="subtitle" style="margin-bottom:16px;">At the production level, after all tests pass, a separate senior AI reviews the code from scratch with zero bias.</p>
-
-        <div class="grid-3 mb-16">
-          <div class="card c-green" style="text-align: center;">
-            <span style="font-size: 32px; display: block; margin-bottom: 8px;">&#x2705;</span>
-            <h3 style="color: #1a8a00;">APPROVED</h3>
-            <p>Everything looks great. No issues found. All enterprise features are present. <strong>Ready for production.</strong></p>
-          </div>
-          <div class="card c-orange" style="text-align: center;">
-            <span style="font-size: 32px; display: block; margin-bottom: 8px;">&#x1f7e1;</span>
-            <h3 style="color: var(--orange);">APPROVED WITH CONDITIONS</h3>
-            <p>Code is good and functional. Some features needed for production haven't been built yet. <strong>The number will decrease as you keep building.</strong></p>
-          </div>
-          <div class="card c-red" style="text-align: center;">
-            <span style="font-size: 32px; display: block; margin-bottom: 8px;">&#x1f6d1;</span>
-            <h3 style="color: var(--red);">CHANGES REQUIRED</h3>
-            <p>Problems were found that must be fixed: security issues, broken logic, or missing critical features. <strong>Claude will fix these automatically.</strong></p>
-          </div>
-        </div>
-
-        <div class="big-quote">
-          Opus has <strong>zero knowledge</strong> of the development process. It only sees the code changes and test results.
-          This is intentional &mdash; it eliminates bias and catches issues the builder might miss. Like an external auditor
-          reviewing financial statements. <strong>This review only runs at the production gate level.</strong>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE: DEPLOY FLOW ==================== -->
-    <div class="slide" data-slide="11">
-      <div class="slide-scroll">
-        <h2>What Happens When You Say <span class="highlight-blue">"Ship It"</span></h2>
-        <p class="subtitle" style="margin-bottom:16px;">The entire deploy process is a conversation. Claude asks questions, you click answers, and the right checks run automatically.</p>
-
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div class="card c-purple" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
-            <span class="step-num">1</span>
-            <div>
-              <h3>You say "ship it" or "share with my team"</h3>
-              <p>Claude switches to deploy mode automatically.</p>
-            </div>
-          </div>
-          <div class="card c-blue" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
-            <span class="step-num" style="background: var(--blue);">2</span>
-            <div>
-              <h3>Claude asks: "Who is this for?"</h3>
-              <p>You get clickable options: Just me (MVP) / My team (Team) / External users (Production). Claude also asks about data visibility and external access if needed.</p>
-            </div>
-          </div>
-          <div class="card c-green" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
-            <span class="step-num" style="background: var(--green);">3</span>
-            <div>
-              <h3>The right checks run automatically</h3>
-              <p>MVP: security + smoke test. Team: + unit tests + auth check. Production: + full tests + performance + Opus code review.</p>
-            </div>
-          </div>
-          <div class="card" style="padding: 16px; display: flex; align-items: center; gap: 16px; background: var(--bg-lavender);">
-            <span class="step-num" style="background: var(--purple);">4</span>
-            <div>
-              <h3>Claude reports the results in plain English</h3>
-              <p>If something fails, Claude fixes it and re-runs. When everything passes, you're back in build mode with a changelog entry.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- ==================== SLIDE 10: ENTERPRISE FEATURES ==================== -->
-    <div class="slide" data-slide="12">
+    <div class="slide" data-slide="7">
       <div class="slide-scroll">
         <h2>Enterprise Features &mdash; Built In, Not Bolted On</h2>
         <p class="subtitle" style="margin-bottom:16px;">Every app you build automatically includes enterprise-grade features. They're split into two tiers.</p>
@@ -1194,8 +989,41 @@
       </div>
     </div>
 
+    <!-- ==================== SLIDE: ROLES & PERMISSIONS ==================== -->
+    <div class="slide" data-slide="8">
+      <div class="slide-scroll">
+        <h2>Roles &amp; <span class="highlight-purple">Permissions</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">Built-in access control from day one.</p>
+
+        <div class="grid-2" style="gap: 12px; margin-bottom: 16px;">
+          <div class="card" style="padding: 16px;">
+            <h3 style="font-size: 14px; color: var(--purple);">4 Default Roles</h3>
+            <table style="width:100%; font-size: 13px; margin-top: 8px;">
+              <tr><td style="padding: 4px 0;"><strong>Admin</strong></td><td>Full access to everything</td></tr>
+              <tr><td style="padding: 4px 0;"><strong>Manager</strong></td><td>Manage team and resources</td></tr>
+              <tr><td style="padding: 4px 0;"><strong>Member</strong></td><td>View and edit own items</td></tr>
+              <tr><td style="padding: 4px 0;"><strong>Viewer</strong></td><td>Read-only access</td></tr>
+            </table>
+          </div>
+          <div class="card" style="padding: 16px;">
+            <h3 style="font-size: 14px; color: var(--blue);">How It Works</h3>
+            <ul class="bullet-list mt-8" style="font-size: 13px;">
+              <li>Database enforces who can see and change data</li>
+              <li>Backend checks roles before allowing actions</li>
+              <li>Frontend shows/hides features based on your role</li>
+              <li>Dev user starts as Admin for full testing access</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          Roles are set up automatically during bootstrap. Claude adds app-specific permissions as you build features. The pipeline verifies roles are properly configured before you deploy.
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== SLIDE 11: UNDERSTANDING BLOCKED ==================== -->
-    <div class="slide" data-slide="13">
+    <div class="slide" data-slide="9">
       <div class="slide-scroll">
         <h2>When Something Is <span style="color: var(--red);">Blocked</span></h2>
         <p class="subtitle" style="margin-bottom:16px;">In build mode, only security issues cause blocks. In deploy mode, quality checks can also block. Either way, messages are always in plain English.</p>
@@ -1244,7 +1072,7 @@
     </div>
 
     <!-- ==================== SLIDE 12: FRIENDLY NARRATION ==================== -->
-    <div class="slide" data-slide="14">
+    <div class="slide" data-slide="10">
       <div class="slide-scroll">
         <h2>Claude Speaks <span class="highlight-purple">Plain English</span></h2>
         <p class="subtitle" style="margin-bottom:20px;">Claude always explains what it did and why &mdash; in language anyone can understand. No technical jargon, ever.</p>
@@ -1284,8 +1112,381 @@
       </div>
     </div>
 
-    <!-- ==================== SLIDE 13: THE CHANGELOG ==================== -->
+    <!-- ==================== SLIDE 5: HOW IT WORKS ==================== -->
+    <div class="slide" data-slide="11">
+      <div class="slide-scroll">
+        <h2>How It Works</h2>
+        <p class="subtitle" style="margin-bottom:20px;">Layers of protection work silently. In build mode, only security guards are active. In deploy mode, everything kicks in.</p>
+
+        <div class="grid-2" style="gap: 12px;">
+          <div class="card c-purple">
+            <span class="card-label">Layer 1 &mdash; Rules</span>
+            <h3>Memory &amp; Standards</h3>
+            <p>Claude remembers the project's rules: which tech to use, how to structure code, what security patterns to follow. These rules are always loaded &mdash; you never need to repeat them.</p>
+          </div>
+          <div class="card c-orange">
+            <span class="card-label">Layer 2 &mdash; Guards</span>
+            <h3>Real-Time Protection</h3>
+            <p>Every time Claude writes code, security checks run instantly. In build mode, only dangerous patterns are blocked. In deploy mode, full quality checks activate. All messages are in plain English.</p>
+          </div>
+          <div class="card c-blue">
+            <span class="card-label">Layer 3 &mdash; Agents</span>
+            <h3>Specialist Workers</h3>
+            <p>Dedicated AI agents handle specific jobs in parallel: one builds the backend, another the frontend, others run tests and security scans &mdash; all at the same time.</p>
+          </div>
+          <div class="card c-green">
+            <span class="card-label">Layer 4 &mdash; Pipeline</span>
+            <h3>Deploy Validation</h3>
+            <p>When you deploy, the pipeline runs at your chosen gate level (MVP, Team, or Production). Only the checks appropriate for that level are executed.</p>
+          </div>
+        </div>
+
+        <div class="card c-red mt-16" style="text-align: center;">
+          <span class="card-label">Layer 5 &mdash; Independent Review (Production only)</span>
+          <h3>Opus Code Review</h3>
+          <p>At the production gate level, a separate senior AI (Claude Opus) reviews the code with <strong>zero knowledge</strong> of the development session. Like an independent auditor checking every change before it goes live.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: THREE GATE LEVELS ==================== -->
+    <div class="slide" data-slide="12">
+      <div class="slide-scroll">
+        <h2>Three Levels of <span class="highlight-purple">Validation</span></h2>
+        <p class="subtitle" style="margin-bottom:20px;">When you deploy, Claude asks who it's for and runs the right level of checks. Start simple and level up as your project grows.</p>
+
+        <div class="grid-3" style="gap: 16px;">
+          <div class="card c-green" style="padding: 24px;">
+            <span class="card-label" style="color: #1a8a00;">MVP</span>
+            <h3>"Just me testing"</h3>
+            <p class="mb-8">A quick check to make sure nothing is broken or insecure. Takes about a minute.</p>
+            <ul class="bullet-list mt-8">
+              <li>Security scan &mdash; no passwords or secrets in code</li>
+              <li>App starts without errors</li>
+              <li>The main feature works end-to-end</li>
+            </ul>
+            <div class="sm mt-16" style="font-style: italic;">Say: "Let me test this" or "Quick check"</div>
+          </div>
+          <div class="card c-blue" style="padding: 24px;">
+            <span class="card-label">Team</span>
+            <h3>"Sharing with colleagues"</h3>
+            <p class="mb-8">Validates that the app is reliable enough for other people to use. Takes a few minutes.</p>
+            <ul class="bullet-list mt-8">
+              <li>Everything in MVP, plus:</li>
+              <li>All tests pass with reasonable coverage</li>
+              <li>Errors are handled gracefully (no blank screens)</li>
+              <li>Login and permissions work correctly</li>
+            </ul>
+            <div class="sm mt-16" style="font-style: italic;">Say: "Share with my team" or "Ship it to the team"</div>
+          </div>
+          <div class="card c-purple" style="padding: 24px;">
+            <span class="card-label">Production</span>
+            <h3>"External users"</h3>
+            <p class="mb-8">Full enterprise validation. Performance testing, independent code review, everything. Takes 5&ndash;10 minutes.</p>
+            <ul class="bullet-list mt-8">
+              <li>Everything in Team, plus:</li>
+              <li>Full test suite with high coverage</li>
+              <li>Performance validated &mdash; fast response times</li>
+              <li>Independent AI code review (Opus)</li>
+              <li>All enterprise features present</li>
+            </ul>
+            <div class="sm mt-16" style="font-style: italic;">Say: "Ship to production" or "Ready for external users"</div>
+          </div>
+        </div>
+
+        <div class="big-quote mt-16">
+          You don't need to start at production level. Build your MVP, test it yourself, share it with your team, and
+          graduate to production when you're ready. The system grows with you.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: DEPLOY FLOW ==================== -->
+    <div class="slide" data-slide="13">
+      <div class="slide-scroll">
+        <h2>What Happens When You Say <span class="highlight-blue">"Ship It"</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">The entire deploy process is a conversation. Claude asks questions, you click answers, and the right checks run automatically.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="card c-purple" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+            <span class="step-num">1</span>
+            <div>
+              <h3>You say "ship it" or "share with my team"</h3>
+              <p>Claude switches to deploy mode automatically.</p>
+            </div>
+          </div>
+          <div class="card c-blue" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+            <span class="step-num" style="background: var(--blue);">2</span>
+            <div>
+              <h3>Claude asks: "Who is this for?"</h3>
+              <p>You get clickable options: Just me (MVP) / My team (Team) / External users (Production). Claude also asks about data visibility and external access if needed.</p>
+            </div>
+          </div>
+          <div class="card c-green" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+            <span class="step-num" style="background: var(--green);">3</span>
+            <div>
+              <h3>The right checks run automatically</h3>
+              <p>MVP: security + smoke test. Team: + unit tests + auth check. Production: + full tests + performance + Opus code review.</p>
+            </div>
+          </div>
+          <div class="card" style="padding: 16px; display: flex; align-items: center; gap: 16px; background: var(--bg-lavender);">
+            <span class="step-num" style="background: var(--purple);">4</span>
+            <div>
+              <h3>Claude reports the results in plain English</h3>
+              <p>If something fails, Claude fixes it and re-runs. When everything passes, you're back in build mode with a changelog entry.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 9: THE PIPELINE (DEPLOY MODE) ==================== -->
+    <div class="slide" data-slide="14">
+      <div class="slide-scroll">
+        <h2>The Deploy Pipeline &mdash; What Runs When You Ship</h2>
+        <p class="subtitle" style="margin-bottom:16px;">When you say "ship it," the pipeline runs at your chosen level. Here's what the full production pipeline looks like:</p>
+
+        <div class="grid-4 mb-16">
+          <div class="layer-card" style="border-top: 3px solid var(--purple);">
+            <span class="layer-icon">&#x1f9ea;</span>
+            <h3>Unit Tests</h3>
+            <p>Does each individual piece of code work correctly on its own?</p>
+            <div class="sm mt-8"><span class="badge badge-blue" style="margin:0;">Team+</span></div>
+          </div>
+          <div class="layer-card" style="border-top: 3px solid var(--blue);">
+            <span class="layer-icon">&#x1f5a5;</span>
+            <h3>UI Tests</h3>
+            <p>Do user-facing screens and flows work in a real browser?</p>
+            <div class="sm mt-8"><span class="badge badge-purple" style="margin:0;">Production</span></div>
+          </div>
+          <div class="layer-card" style="border-top: 3px solid var(--green);">
+            <span class="layer-icon">&#x1f517;</span>
+            <h3>Integration Tests</h3>
+            <p>Do the API endpoints and database work together correctly?</p>
+            <div class="sm mt-8"><span class="badge badge-purple" style="margin:0;">Production</span></div>
+          </div>
+          <div class="layer-card" style="border-top: 3px solid var(--orange);">
+            <span class="layer-icon">&#x26a1;</span>
+            <h3>Performance Tests</h3>
+            <p>Is the app fast enough? Does it handle multiple users?</p>
+            <div class="sm mt-8"><span class="badge badge-purple" style="margin:0;">Production</span></div>
+          </div>
+        </div>
+
+        <div class="connect-visual">
+          <div class="connect-node" style="background: var(--bg-green); color: #1a8a00;">MVP: Security + Smoke</div>
+          <span class="connect-arrow">&rarr;</span>
+          <div class="connect-node" style="background: rgba(22,121,250,0.08); color: var(--blue);">Team: + Unit Tests</div>
+          <span class="connect-arrow">&rarr;</span>
+          <div class="connect-node" style="background: var(--bg-lavender); color: var(--purple);">Production: + All Tests + Opus</div>
+        </div>
+
+        <p class="sm mt-8" style="text-align: center;">Each level includes everything from the level before it. You choose the right level when you deploy.</p>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 9: OPUS REVIEW ==================== -->
     <div class="slide" data-slide="15">
+      <div class="slide-scroll">
+        <h2>The Opus Review &mdash; Your Independent Auditor</h2>
+        <p class="subtitle" style="margin-bottom:16px;">At the production level, after all tests pass, a separate senior AI reviews the code from scratch with zero bias.</p>
+
+        <div class="grid-3 mb-16">
+          <div class="card c-green" style="text-align: center;">
+            <span style="font-size: 32px; display: block; margin-bottom: 8px;">&#x2705;</span>
+            <h3 style="color: #1a8a00;">APPROVED</h3>
+            <p>Everything looks great. No issues found. All enterprise features are present. <strong>Ready for production.</strong></p>
+          </div>
+          <div class="card c-orange" style="text-align: center;">
+            <span style="font-size: 32px; display: block; margin-bottom: 8px;">&#x1f7e1;</span>
+            <h3 style="color: var(--orange);">APPROVED WITH CONDITIONS</h3>
+            <p>Code is good and functional. Some features needed for production haven't been built yet. <strong>The number will decrease as you keep building.</strong></p>
+          </div>
+          <div class="card c-red" style="text-align: center;">
+            <span style="font-size: 32px; display: block; margin-bottom: 8px;">&#x1f6d1;</span>
+            <h3 style="color: var(--red);">CHANGES REQUIRED</h3>
+            <p>Problems were found that must be fixed: security issues, broken logic, or missing critical features. <strong>Claude will fix these automatically.</strong></p>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          Opus has <strong>zero knowledge</strong> of the development process. It only sees the code changes and test results.
+          This is intentional &mdash; it eliminates bias and catches issues the builder might miss. Like an external auditor
+          reviewing financial statements. <strong>This review only runs at the production gate level.</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: DEPLOYING — WHERE DO YOU WANT YOUR APP? ==================== -->
+    <div class="slide" data-slide="16">
+      <div class="slide-scroll">
+        <h2>Where Do You Want <span class="highlight-green">Your App</span>?</h2>
+        <p class="subtitle" style="margin-bottom:16px;">Two deployment targets. Same pipeline. Your choice sticks until you change it.</p>
+
+        <div class="grid-2" style="gap: 16px; margin-bottom: 16px;">
+          <div class="card" style="padding: 20px; background: rgba(22,121,250,0.06); border: 2px solid rgba(22,121,250,0.2);">
+            <h3 style="color: var(--blue); margin-bottom: 10px;">Cloud</h3>
+            <p style="font-size: 13px; margin-bottom: 10px;">For teams that want the quickest path to a public URL.</p>
+            <ul class="bullet-list" style="font-size: 13px;">
+              <li>Hosted on the internet, shareable link</li>
+              <li>Works without an IT team</li>
+              <li>Company login via Supabase Auth</li>
+              <li>~$45/mo (estimated)</li>
+            </ul>
+          </div>
+          <div class="card" style="padding: 20px; background: var(--bg-lavender); border: 2px solid rgba(129,57,238,0.2);">
+            <h3 style="color: var(--purple); margin-bottom: 10px;">Company Server</h3>
+            <p style="font-size: 13px; margin-bottom: 10px;">For companies already on Azure + Google Workspace.</p>
+            <ul class="bullet-list" style="font-size: 13px;">
+              <li>Runs on your company's Azure infrastructure</li>
+              <li>Employees log in with company email automatically</li>
+              <li>Apps stay on-premises or in your org's cloud</li>
+              <li>~$15–30/mo per app (estimated)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          Say "ship it" and Claude will ask where you want it. Say "switch to the company server" or "switch to the cloud" anytime to change.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: CLOUD (VERCEL) ==================== -->
+    <div class="slide" data-slide="17">
+      <div class="slide-scroll">
+        <h2>Deploying to the <span class="highlight-green">Cloud</span> (Vercel)</h2>
+        <p class="subtitle" style="margin-bottom:16px;">From local to live in one conversation.</p>
+
+        <div class="grid-3" style="gap: 12px; margin-bottom: 16px;">
+          <div class="card" style="padding: 16px; background: var(--bg-green);">
+            <h3 style="color: #1a8a00; font-size: 14px;">1. Scaffold</h3>
+            <p style="font-size: 13px; margin-top: 6px;">Claude creates <code>vercel.json</code> and an API adapter. Your existing code stays unchanged.</p>
+          </div>
+          <div class="card" style="padding: 16px; background: rgba(22,121,250,0.06);">
+            <h3 style="color: var(--blue); font-size: 14px;">2. Pipeline</h3>
+            <p style="font-size: 13px; margin-top: 6px;">Full quality checks run first. Nothing goes live until the pipeline passes.</p>
+          </div>
+          <div class="card" style="padding: 16px; background: var(--bg-lavender);">
+            <h3 style="color: var(--purple); font-size: 14px;">3. Deploy</h3>
+            <p style="font-size: 13px; margin-top: 6px;">One command to Vercel. Your app is live with a URL you can share.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 16px; margin-bottom: 12px;">
+          <h3 style="font-size: 14px; margin-bottom: 8px;">Three Paths</h3>
+          <ul class="bullet-list">
+            <li><strong>Self-service</strong> &mdash; You have Vercel + Supabase accounts. Claude deploys directly.</li>
+            <li><strong>IT handoff</strong> &mdash; Your IT team handles infrastructure. Claude generates a complete setup guide.</li>
+            <li><strong>Guided setup</strong> &mdash; Not sure yet? Claude creates everything so it's ready when you are.</li>
+          </ul>
+        </div>
+
+        <div class="big-quote">
+          Say "deploy to cloud" or "make this live" and Claude handles the rest. The pipeline runs first &mdash; nothing ships unless it passes.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: COMPANY SERVER (AZURE) ARCHITECTURE ==================== -->
+    <div class="slide" data-slide="18">
+      <div class="slide-scroll">
+        <h2>Company Server <span class="highlight-purple">Architecture</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">Your app runs in your company's Azure infrastructure. IT sets it up once.</p>
+
+        <div class="grid-2" style="gap: 12px; margin-bottom: 16px;">
+          <div class="card" style="padding: 16px;">
+            <h3 style="font-size: 14px; color: var(--purple); margin-bottom: 8px;">How it works</h3>
+            <ul class="bullet-list" style="font-size: 13px;">
+              <li>Your app runs inside a Docker container on Azure</li>
+              <li>Employees visit the URL and click "Sign in with Google"</li>
+              <li>A security proxy checks their email is from your company domain</li>
+              <li>The app receives the employee's email — no passwords to manage</li>
+              <li>Roles and permissions still work exactly the same way</li>
+            </ul>
+          </div>
+          <div class="card" style="padding: 16px;">
+            <h3 style="font-size: 14px; color: var(--blue); margin-bottom: 8px;">What IT sets up (once)</h3>
+            <ul class="bullet-list" style="font-size: 13px;">
+              <li>Azure Container Apps environment (shared across apps)</li>
+              <li>Shared PostgreSQL database server</li>
+              <li>Shared Blob Storage account</li>
+              <li>Google OAuth client in Google Cloud Console</li>
+              <li>Each new app gets its own isolated slice automatically</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          Claude generates a complete IT setup guide. After one-time setup, every new app deploys with a single command.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: DUAL AUTH MODES ==================== -->
+    <div class="slide" data-slide="19">
+      <div class="slide-scroll">
+        <h2>How <span class="highlight-green">Login</span> Works</h2>
+        <p class="subtitle" style="margin-bottom:16px;">The login experience adapts to your deployment target automatically.</p>
+
+        <div class="grid-2" style="gap: 16px; margin-bottom: 16px;">
+          <div class="card" style="padding: 20px; background: rgba(22,121,250,0.06);">
+            <h3 style="color: var(--blue); font-size: 14px; margin-bottom: 8px;">Cloud login</h3>
+            <ul class="bullet-list" style="font-size: 13px;">
+              <li>Email + password via Supabase Auth</li>
+              <li>Optional Google login button</li>
+              <li>Works for any email address</li>
+              <li>You control who gets an account (invite-only)</li>
+            </ul>
+          </div>
+          <div class="card" style="padding: 20px; background: var(--bg-lavender);">
+            <h3 style="color: var(--purple); font-size: 14px; margin-bottom: 8px;">Company server login</h3>
+            <ul class="bullet-list" style="font-size: 13px;">
+              <li>Employees click "Sign in with Google"</li>
+              <li>Only your company email domain is allowed</li>
+              <li>No password registration needed</li>
+              <li>New employees auto-provisioned on first login</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 16px; background: var(--bg-green);">
+          <h3 style="font-size: 13px; color: #1a8a00; margin-bottom: 6px;">Roles work the same in both modes</h3>
+          <p style="font-size: 13px;">Admin, Manager, Member, Viewer — the four default roles apply regardless of login method. The admin assigns roles after first login. Claude handles the plumbing automatically.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: APP ISOLATION ==================== -->
+    <div class="slide" data-slide="20">
+      <div class="slide-scroll">
+        <h2>App <span class="highlight-purple">Isolation</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">Multiple apps share company infrastructure without ever seeing each other's data.</p>
+
+        <div class="card" style="padding: 16px; margin-bottom: 12px;">
+          <h3 style="font-size: 14px; margin-bottom: 10px;">One schema per app</h3>
+          <p style="font-size: 13px;">On the company server, each app gets its own dedicated slice of the shared database. The HR Leave Tracker and the HR Onboarding Tool both live on the same database server, but their tables are completely separate — one can never read the other's data.</p>
+        </div>
+
+        <div class="grid-2" style="gap: 12px; margin-bottom: 12px;">
+          <div class="card" style="padding: 14px; background: rgba(22,121,250,0.06);">
+            <h3 style="font-size: 13px; color: var(--blue); margin-bottom: 6px;">Database</h3>
+            <p style="font-size: 12px;">Each app: its own schema (e.g. <code>hr_leave_tracker</code>) and its own database user. The app can only access its own tables.</p>
+          </div>
+          <div class="card" style="padding: 14px; background: var(--bg-lavender);">
+            <h3 style="font-size: 13px; color: var(--purple); margin-bottom: 6px;">File storage</h3>
+            <p style="font-size: 12px;">Each app: its own storage container (e.g. <code>hr_leave_tracker</code>). Files never mix between apps.</p>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          IT provisions the shared server once. Claude automatically configures each new app's isolation at scaffold time — no manual schema setup needed.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 13: THE CHANGELOG ==================== -->
+    <div class="slide" data-slide="21">
       <div class="slide-scroll">
         <h2>The Changelog &mdash; Your Project History</h2>
         <p class="subtitle" style="margin-bottom:16px;">Two automatic records are kept for you. Changelog entries are only created when you deploy &mdash; not during regular building.</p>
@@ -1330,7 +1531,7 @@
     </div>
 
     <!-- ==================== SLIDE 14: RELEASES & DEPLOYMENT ==================== -->
-    <div class="slide" data-slide="16">
+    <div class="slide" data-slide="22">
       <div class="slide-scroll">
         <h2>Releases &amp; Deployment</h2>
         <p class="subtitle" style="margin-bottom:16px;">Two optional actions you can take when you're ready to ship.</p>
@@ -1371,7 +1572,7 @@
     </div>
 
     <!-- ==================== SLIDE: TIPS ==================== -->
-    <div class="slide" data-slide="17">
+    <div class="slide" data-slide="23">
       <div class="slide-scroll">
         <h2>Tips for Working With <span class="highlight-green">Claude</span></h2>
         <p class="subtitle" style="margin-bottom:16px;">A few things that make the experience smoother.</p>
@@ -1399,207 +1600,6 @@
 
         <div class="big-quote mt-16">
           Claude remembers your project context between sessions. If your terminal closes unexpectedly, just reopen Claude Code and it will offer to pick up where you left off.
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE: DEPLOYING — WHERE DO YOU WANT YOUR APP? ==================== -->
-    <div class="slide" data-slide="18">
-      <div class="slide-scroll">
-        <h2>Where Do You Want <span class="highlight-green">Your App</span>?</h2>
-        <p class="subtitle" style="margin-bottom:16px;">Two deployment targets. Same pipeline. Your choice sticks until you change it.</p>
-
-        <div class="grid-2" style="gap: 16px; margin-bottom: 16px;">
-          <div class="card" style="padding: 20px; background: rgba(22,121,250,0.06); border: 2px solid rgba(22,121,250,0.2);">
-            <h3 style="color: var(--blue); margin-bottom: 10px;">Cloud</h3>
-            <p style="font-size: 13px; margin-bottom: 10px;">For teams that want the quickest path to a public URL.</p>
-            <ul class="bullet-list" style="font-size: 13px;">
-              <li>Hosted on the internet, shareable link</li>
-              <li>Works without an IT team</li>
-              <li>Company login via Supabase Auth</li>
-              <li>~$45/mo (estimated)</li>
-            </ul>
-          </div>
-          <div class="card" style="padding: 20px; background: var(--bg-lavender); border: 2px solid rgba(129,57,238,0.2);">
-            <h3 style="color: var(--purple); margin-bottom: 10px;">Company Server</h3>
-            <p style="font-size: 13px; margin-bottom: 10px;">For companies already on Azure + Google Workspace.</p>
-            <ul class="bullet-list" style="font-size: 13px;">
-              <li>Runs on your company's Azure infrastructure</li>
-              <li>Employees log in with company email automatically</li>
-              <li>Apps stay on-premises or in your org's cloud</li>
-              <li>~$15–30/mo per app (estimated)</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="big-quote">
-          Say "ship it" and Claude will ask where you want it. Say "switch to the company server" or "switch to the cloud" anytime to change.
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE: CLOUD (VERCEL) ==================== -->
-    <div class="slide" data-slide="19">
-      <div class="slide-scroll">
-        <h2>Deploying to the <span class="highlight-green">Cloud</span> (Vercel)</h2>
-        <p class="subtitle" style="margin-bottom:16px;">From local to live in one conversation.</p>
-
-        <div class="grid-3" style="gap: 12px; margin-bottom: 16px;">
-          <div class="card" style="padding: 16px; background: var(--bg-green);">
-            <h3 style="color: #1a8a00; font-size: 14px;">1. Scaffold</h3>
-            <p style="font-size: 13px; margin-top: 6px;">Claude creates <code>vercel.json</code> and an API adapter. Your existing code stays unchanged.</p>
-          </div>
-          <div class="card" style="padding: 16px; background: rgba(22,121,250,0.06);">
-            <h3 style="color: var(--blue); font-size: 14px;">2. Pipeline</h3>
-            <p style="font-size: 13px; margin-top: 6px;">Full quality checks run first. Nothing goes live until the pipeline passes.</p>
-          </div>
-          <div class="card" style="padding: 16px; background: var(--bg-lavender);">
-            <h3 style="color: var(--purple); font-size: 14px;">3. Deploy</h3>
-            <p style="font-size: 13px; margin-top: 6px;">One command to Vercel. Your app is live with a URL you can share.</p>
-          </div>
-        </div>
-
-        <div class="card" style="padding: 16px; margin-bottom: 12px;">
-          <h3 style="font-size: 14px; margin-bottom: 8px;">Three Paths</h3>
-          <ul class="bullet-list">
-            <li><strong>Self-service</strong> &mdash; You have Vercel + Supabase accounts. Claude deploys directly.</li>
-            <li><strong>IT handoff</strong> &mdash; Your IT team handles infrastructure. Claude generates a complete setup guide.</li>
-            <li><strong>Guided setup</strong> &mdash; Not sure yet? Claude creates everything so it's ready when you are.</li>
-          </ul>
-        </div>
-
-        <div class="big-quote">
-          Say "deploy to cloud" or "make this live" and Claude handles the rest. The pipeline runs first &mdash; nothing ships unless it passes.
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE: COMPANY SERVER (AZURE) ARCHITECTURE ==================== -->
-    <div class="slide" data-slide="20">
-      <div class="slide-scroll">
-        <h2>Company Server <span class="highlight-purple">Architecture</span></h2>
-        <p class="subtitle" style="margin-bottom:16px;">Your app runs in your company's Azure infrastructure. IT sets it up once.</p>
-
-        <div class="grid-2" style="gap: 12px; margin-bottom: 16px;">
-          <div class="card" style="padding: 16px;">
-            <h3 style="font-size: 14px; color: var(--purple); margin-bottom: 8px;">How it works</h3>
-            <ul class="bullet-list" style="font-size: 13px;">
-              <li>Your app runs inside a Docker container on Azure</li>
-              <li>Employees visit the URL and click "Sign in with Google"</li>
-              <li>A security proxy checks their email is from your company domain</li>
-              <li>The app receives the employee's email — no passwords to manage</li>
-              <li>Roles and permissions still work exactly the same way</li>
-            </ul>
-          </div>
-          <div class="card" style="padding: 16px;">
-            <h3 style="font-size: 14px; color: var(--blue); margin-bottom: 8px;">What IT sets up (once)</h3>
-            <ul class="bullet-list" style="font-size: 13px;">
-              <li>Azure Container Apps environment (shared across apps)</li>
-              <li>Shared PostgreSQL database server</li>
-              <li>Shared Blob Storage account</li>
-              <li>Google OAuth client in Google Cloud Console</li>
-              <li>Each new app gets its own isolated slice automatically</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="big-quote">
-          Claude generates a complete IT setup guide. After one-time setup, every new app deploys with a single command.
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE: DUAL AUTH MODES ==================== -->
-    <div class="slide" data-slide="21">
-      <div class="slide-scroll">
-        <h2>How <span class="highlight-green">Login</span> Works</h2>
-        <p class="subtitle" style="margin-bottom:16px;">The login experience adapts to your deployment target automatically.</p>
-
-        <div class="grid-2" style="gap: 16px; margin-bottom: 16px;">
-          <div class="card" style="padding: 20px; background: rgba(22,121,250,0.06);">
-            <h3 style="color: var(--blue); font-size: 14px; margin-bottom: 8px;">Cloud login</h3>
-            <ul class="bullet-list" style="font-size: 13px;">
-              <li>Email + password via Supabase Auth</li>
-              <li>Optional Google login button</li>
-              <li>Works for any email address</li>
-              <li>You control who gets an account (invite-only)</li>
-            </ul>
-          </div>
-          <div class="card" style="padding: 20px; background: var(--bg-lavender);">
-            <h3 style="color: var(--purple); font-size: 14px; margin-bottom: 8px;">Company server login</h3>
-            <ul class="bullet-list" style="font-size: 13px;">
-              <li>Employees click "Sign in with Google"</li>
-              <li>Only your company email domain is allowed</li>
-              <li>No password registration needed</li>
-              <li>New employees auto-provisioned on first login</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="card" style="padding: 16px; background: var(--bg-green);">
-          <h3 style="font-size: 13px; color: #1a8a00; margin-bottom: 6px;">Roles work the same in both modes</h3>
-          <p style="font-size: 13px;">Admin, Manager, Member, Viewer — the four default roles apply regardless of login method. The admin assigns roles after first login. Claude handles the plumbing automatically.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE: APP ISOLATION ==================== -->
-    <div class="slide" data-slide="22">
-      <div class="slide-scroll">
-        <h2>App <span class="highlight-purple">Isolation</span></h2>
-        <p class="subtitle" style="margin-bottom:16px;">Multiple apps share company infrastructure without ever seeing each other's data.</p>
-
-        <div class="card" style="padding: 16px; margin-bottom: 12px;">
-          <h3 style="font-size: 14px; margin-bottom: 10px;">One schema per app</h3>
-          <p style="font-size: 13px;">On the company server, each app gets its own dedicated slice of the shared database. The HR Leave Tracker and the HR Onboarding Tool both live on the same database server, but their tables are completely separate — one can never read the other's data.</p>
-        </div>
-
-        <div class="grid-2" style="gap: 12px; margin-bottom: 12px;">
-          <div class="card" style="padding: 14px; background: rgba(22,121,250,0.06);">
-            <h3 style="font-size: 13px; color: var(--blue); margin-bottom: 6px;">Database</h3>
-            <p style="font-size: 12px;">Each app: its own schema (e.g. <code>hr_leave_tracker</code>) and its own database user. The app can only access its own tables.</p>
-          </div>
-          <div class="card" style="padding: 14px; background: var(--bg-lavender);">
-            <h3 style="font-size: 13px; color: var(--purple); margin-bottom: 6px;">File storage</h3>
-            <p style="font-size: 12px;">Each app: its own storage container (e.g. <code>hr_leave_tracker</code>). Files never mix between apps.</p>
-          </div>
-        </div>
-
-        <div class="big-quote">
-          IT provisions the shared server once. Claude automatically configures each new app's isolation at scaffold time — no manual schema setup needed.
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== SLIDE: ROLES & PERMISSIONS ==================== -->
-    <div class="slide" data-slide="23">
-      <div class="slide-scroll">
-        <h2>Roles &amp; <span class="highlight-purple">Permissions</span></h2>
-        <p class="subtitle" style="margin-bottom:16px;">Built-in access control from day one.</p>
-
-        <div class="grid-2" style="gap: 12px; margin-bottom: 16px;">
-          <div class="card" style="padding: 16px;">
-            <h3 style="font-size: 14px; color: var(--purple);">4 Default Roles</h3>
-            <table style="width:100%; font-size: 13px; margin-top: 8px;">
-              <tr><td style="padding: 4px 0;"><strong>Admin</strong></td><td>Full access to everything</td></tr>
-              <tr><td style="padding: 4px 0;"><strong>Manager</strong></td><td>Manage team and resources</td></tr>
-              <tr><td style="padding: 4px 0;"><strong>Member</strong></td><td>View and edit own items</td></tr>
-              <tr><td style="padding: 4px 0;"><strong>Viewer</strong></td><td>Read-only access</td></tr>
-            </table>
-          </div>
-          <div class="card" style="padding: 16px;">
-            <h3 style="font-size: 14px; color: var(--blue);">How It Works</h3>
-            <ul class="bullet-list mt-8" style="font-size: 13px;">
-              <li>Database enforces who can see and change data</li>
-              <li>Backend checks roles before allowing actions</li>
-              <li>Frontend shows/hides features based on your role</li>
-              <li>Dev user starts as Admin for full testing access</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="big-quote">
-          Roles are set up automatically during bootstrap. Claude adds app-specific permissions as you build features. The pipeline verifies roles are properly configured before you deploy.
         </div>
       </div>
     </div>
