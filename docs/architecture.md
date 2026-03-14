@@ -140,10 +140,20 @@ When the app needs to serve both internal users and external parties (suppliers,
 ```
 ┌──────────────────────────────────────────────┐
 │                  Vercel                        │
+│                                                │
 │  ┌──────────────────────────────────────┐    │
 │  │  Nuxt 3 SSR + Static Assets          │    │
-│  │  Edge Functions (middleware)          │    │
+│  │  (frontend/ → built with nuxt build)  │    │
 │  └──────────────────────────────────────┘    │
+│                                                │
+│  ┌──────────────────────────────────────┐    │
+│  │  FastAPI Serverless Functions         │    │
+│  │  (api/index.py → wraps backend/)     │    │
+│  │  Routes: /api/* → Python runtime      │    │
+│  └──────────────────────────────────────┘    │
+│                                                │
+│  Preview deploys per PR                       │
+│  Production deploy on merge to main           │
 └──────────────────────────────────────────────┘
                      │
                      ▼
@@ -158,3 +168,5 @@ When the app needs to serve both internal users and external parties (suppliers,
 │  └────────────┘ └──────────┘ └────────────┘ │
 └──────────────────────────────────────────────┘
 ```
+
+**How it works:** The `api/index.py` adapter imports the existing FastAPI app from `backend/main.py`. Vercel auto-detects it as an ASGI app and serves it at `/api/*`. Local development with `uvicorn` is completely unchanged — the adapter is only used by Vercel's Python runtime.

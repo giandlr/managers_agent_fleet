@@ -99,9 +99,11 @@ MIN_COVERAGE_BRANCHES: 70
 
 ## Infrastructure
 
-HOSTING: supabase (backend functions via Edge Functions if needed)
-FRONTEND_HOSTING: vercel
-SECRETS: .env.local (local), supabase vault (production)
+HOSTING: vercel (frontend SSR + backend serverless via api/index.py adapter)
+FRONTEND_HOSTING: vercel (Nuxt 3 SSR with edge middleware)
+BACKEND_HOSTING: vercel (FastAPI as Python serverless functions at /api/*)
+DATABASE_HOSTING: supabase-cloud (Pro/Enterprise for SOC2, HIPAA, dedicated instances)
+SECRETS: .env.local (local), vercel env vars + supabase vault (production)
 CI_CD: claude-code pipeline (this system)
 
 ---

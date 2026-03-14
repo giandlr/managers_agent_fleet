@@ -318,6 +318,68 @@ echo ""
 cat .claude/tmp/pipeline-results.md
 
 # ============================================================
+# RBAC Verification (team and above)
+# ============================================================
+
+if stage_required "rbac-check"; then
+    echo ""
+    echo "Verifying RBAC setup..."
+    RBAC_OK=true
+
+    # Check roles table exists
+    if [[ -f "supabase/migrations/00000000000001_rbac.sql" ]]; then
+        echo "  + RBAC migration exists"
+    else
+        echo "  x RBAC migration not found"
+        RBAC_OK=false
+    fi
+
+    # Check RBAC middleware exists
+    if [[ -f "backend/middleware/rbac.py" ]]; then
+        echo "  + RBAC middleware exists"
+    else
+        echo "  x backend/middleware/rbac.py not found"
+        RBAC_OK=false
+    fi
+
+    # Check useRole composable exists
+    if [[ -f "frontend/composables/useRole.ts" ]]; then
+        echo "  + useRole composable exists"
+    else
+        echo "  x frontend/composables/useRole.ts not found"
+        RBAC_OK=false
+    fi
+
+    if $RBAC_OK; then
+        echo "  RBAC check: PASS"
+    else
+        echo "  RBAC check: WARNING — some RBAC files missing"
+    fi
+    echo ""
+fi
+
+# ============================================================
+# Cloud Deploy (if DEPLOY_TARGET=cloud and pipeline passed)
+# ============================================================
+
+if [[ "${DEPLOY_TARGET:-}" == "cloud" ]] && [[ $FINAL_EXIT -eq 0 ]]; then
+    echo ""
+    echo "═══════════════════════════════════════════════════════════"
+    echo " Pipeline passed — proceeding to cloud deployment"
+    echo "═══════════════════════════════════════════════════════════"
+    echo ""
+    CLOUD_ENV="${ENVIRONMENT:-staging}"
+    if [[ -f ".claude/scripts/deploy-cloud.sh" ]]; then
+        bash .claude/scripts/deploy-cloud.sh "$CLOUD_ENV" || {
+            echo "WARNING: Cloud deployment failed." >&2
+            FINAL_EXIT=1
+        }
+    else
+        echo "WARNING: deploy-cloud.sh not found. Run scaffold-cloud-configs.sh first." >&2
+    fi
+fi
+
+# ============================================================
 # Changelog Update (only on pipeline pass)
 # ============================================================
 

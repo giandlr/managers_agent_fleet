@@ -29,6 +29,13 @@ cd frontend && npx playwright --version 2>/dev/null
 
 If not installed, report SKIP with reason "Playwright not installed".
 
+Verify Playwright config exists:
+```bash
+ls frontend/playwright.config.ts 2>/dev/null || ls frontend/playwright.config.js 2>/dev/null
+```
+
+If no config found, report SKIP with reason "Playwright config not found". The bootstrap creates `frontend/playwright.config.ts` with chromium-only project and `frontend/tests/e2e/` test directory containing starter patterns (auth, smoke, forms).
+
 ### 2. Run Playwright Tests
 
 ```bash

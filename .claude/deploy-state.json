@@ -7,5 +7,13 @@
   "deployed_by": null,
   "deployed_version": null,
   "environment": null,
-  "entries": []
+  "entries": [],
+  "cloud": {
+    "provider": null,
+    "project_id": null,
+    "deploy_url": null,
+    "last_deploy_at": null,
+    "last_deploy_status": null,
+    "supabase_project_ref": null
+  }
 }

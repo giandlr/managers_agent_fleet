@@ -113,9 +113,10 @@ The toolkit scaffolds projects with:
 - **Forms:** vee-validate + zod
 - **Backend:** FastAPI (Python 3.9+, async)
 - **Database:** Supabase (PostgreSQL with Row Level Security)
-- **Auth:** Supabase Auth (JWT)
+- **Auth:** Supabase Auth (JWT) + RBAC (4 default roles)
 - **Testing:** Vitest + Playwright (frontend), pytest (backend)
 - **Quality:** ESLint, Prettier, vue-tsc, ruff, mypy, bandit
+- **Hosting:** Vercel (frontend SSR + backend serverless) + Supabase Cloud
 
 All technology decisions are defined in `docs/tech-stack.md`.
 
@@ -186,6 +187,70 @@ An independent AI reviewer (Claude Opus) examines the code with zero knowledge o
 
 ---
 
+## Cloud Deployment
+
+The toolkit supports deploying to Vercel (frontend + backend) with Supabase Cloud:
+
+```
+Vercel (single platform)
+├── Nuxt 3 SSR (frontend/)
+└── FastAPI Serverless (api/index.py wraps backend/)
+
+Supabase Cloud
+└── PostgreSQL + Auth + Storage + Realtime
+```
+
+**Three deployment paths:**
+- **Self-service:** You have Vercel + Supabase accounts → scaffold configs → pipeline → deploy
+- **IT handoff:** Your IT team handles infrastructure → auto-generated setup guide
+- **Guided setup:** Not sure → full handoff doc + configs ready for when you are
+
+Say "deploy to cloud" or "make this live" to start. Estimated cloud costs: Vercel Pro ~$20/mo, Supabase Pro ~$25/mo.
+
+| Command | What It Does |
+|---------|-------------|
+| `bash .claude/scripts/scaffold-cloud-configs.sh` | Creates vercel.json, API adapter, CORS config |
+| `bash .claude/scripts/deploy-cloud.sh [staging\|production]` | Deploys to Vercel |
+| `bash .claude/scripts/setup-supabase-cloud.sh <ref>` | Links + pushes to Supabase Cloud |
+| `bash .claude/scripts/generate-handoff-doc.sh` | Creates IT setup guide |
+
+---
+
+## Playwright E2E Testing
+
+Bootstrap automatically installs Playwright (chromium-only) and creates starter test patterns:
+
+- **`tests/e2e/auth.spec.ts`** — Login flow, auth redirect, session handling
+- **`tests/e2e/smoke.spec.ts`** — Page load + accessibility checks (axe-core)
+- **`tests/e2e/forms.spec.ts`** — Form validation patterns
+
+Tests run as part of the pipeline at Team+ gate levels. Claude adapts the starter patterns to your actual app during build.
+
+| Command | What It Does |
+|---------|-------------|
+| `cd frontend && npm run test:e2e` | Run e2e tests |
+| `cd frontend && npm run test:e2e:ui` | Run with interactive UI |
+
+---
+
+## RBAC (Role-Based Access Control)
+
+Bootstrap creates a complete RBAC foundation with 4 default roles:
+
+| Role | Permissions |
+|------|------------|
+| **Admin** | Full access to all resources |
+| **Manager** | Manage team members and resources |
+| **Member** | View and edit own resources |
+| **Viewer** | Read-only access |
+
+The dev user (`dev@sprout.local`) is automatically assigned the admin role. Claude adds app-specific RLS policies and role-aware features during build.
+
+**Backend:** `require_role("admin")` FastAPI dependency for protected endpoints.
+**Frontend:** `useRole()` composable for role-aware UI rendering.
+
+---
+
 ## The Manual
 
 Open `manual/sprout-guide.html` in any browser for a visual walkthrough of the entire system (20 slides). Navigate with arrow keys or click the dots. Works offline — no external dependencies.
@@ -196,6 +261,7 @@ Open `manual/sprout-guide.html` in any browser for a visual walkthrough of the e
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
+- **v1.2** — Cloud deployment (Vercel + Supabase Cloud), Playwright e2e testing with starter patterns, RBAC foundation (4 default roles), IT handoff doc generator, updated manual (22 slides)
 - **v1.1** — Discovery mode, session recovery, compressed instructions (~56% token reduction), gate-aware deploy pipeline, 6 new hook detections, two-part error messages, updated manual (20 slides)
 - **v1.0** — Initial release with build/deploy modes, three gate levels, Opus code review, hook system, bootstrap script
 

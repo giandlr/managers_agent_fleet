@@ -1,6 +1,6 @@
 <!--
   Document: Manager's Guide to Building Apps with AI
-  Version:  1.4
+  Version:  1.5
   Date:     2026-03-14
   Author:   Sprout
 
@@ -651,7 +651,7 @@
 
   <div class="header">
     <div class="logo"><img src="../sprout-logo-01.svg" alt="Sprout"></div>
-    <div class="slide-counter" id="slideCounter">1 / 20</div>
+    <div class="slide-counter" id="slideCounter">1 / 22</div>
   </div>
 
   <div class="nav-dots" id="navDots"></div>
@@ -1403,8 +1403,77 @@
       </div>
     </div>
 
-    <!-- ==================== SLIDE 15: QUICK REFERENCE ==================== -->
+    <!-- ==================== SLIDE: DEPLOYING TO THE CLOUD ==================== -->
     <div class="slide" data-slide="18">
+      <div class="slide-scroll">
+        <h2>Deploying to the <span class="highlight-green">Cloud</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">From local to live in one conversation.</p>
+
+        <div class="grid-3" style="gap: 12px; margin-bottom: 16px;">
+          <div class="card" style="padding: 16px; background: var(--bg-green);">
+            <h3 style="color: #1a8a00; font-size: 14px;">1. Scaffold</h3>
+            <p style="font-size: 13px; margin-top: 6px;">Claude creates <code>vercel.json</code> and an API adapter. Your existing code stays unchanged.</p>
+          </div>
+          <div class="card" style="padding: 16px; background: rgba(22,121,250,0.06);">
+            <h3 style="color: var(--blue); font-size: 14px;">2. Pipeline</h3>
+            <p style="font-size: 13px; margin-top: 6px;">Full quality checks run first. Nothing goes live until the pipeline passes.</p>
+          </div>
+          <div class="card" style="padding: 16px; background: var(--bg-lavender);">
+            <h3 style="color: var(--purple); font-size: 14px;">3. Deploy</h3>
+            <p style="font-size: 13px; margin-top: 6px;">One command to Vercel. Your app is live with a URL you can share.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 16px; margin-bottom: 12px;">
+          <h3 style="font-size: 14px; margin-bottom: 8px;">Three Paths</h3>
+          <ul class="bullet-list">
+            <li><strong>Self-service</strong> &mdash; You have Vercel + Supabase accounts. Claude deploys directly.</li>
+            <li><strong>IT handoff</strong> &mdash; Your IT team handles infrastructure. Claude generates a complete setup guide.</li>
+            <li><strong>Guided setup</strong> &mdash; Not sure yet? Claude creates everything so it's ready when you are.</li>
+          </ul>
+        </div>
+
+        <div class="big-quote">
+          Say "deploy to cloud" or "make this live" and Claude handles the rest. The pipeline runs first &mdash; nothing ships unless it passes.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: ROLES & PERMISSIONS ==================== -->
+    <div class="slide" data-slide="19">
+      <div class="slide-scroll">
+        <h2>Roles &amp; <span class="highlight-purple">Permissions</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">Built-in access control from day one.</p>
+
+        <div class="grid-2" style="gap: 12px; margin-bottom: 16px;">
+          <div class="card" style="padding: 16px;">
+            <h3 style="font-size: 14px; color: var(--purple);">4 Default Roles</h3>
+            <table style="width:100%; font-size: 13px; margin-top: 8px;">
+              <tr><td style="padding: 4px 0;"><strong>Admin</strong></td><td>Full access to everything</td></tr>
+              <tr><td style="padding: 4px 0;"><strong>Manager</strong></td><td>Manage team and resources</td></tr>
+              <tr><td style="padding: 4px 0;"><strong>Member</strong></td><td>View and edit own items</td></tr>
+              <tr><td style="padding: 4px 0;"><strong>Viewer</strong></td><td>Read-only access</td></tr>
+            </table>
+          </div>
+          <div class="card" style="padding: 16px;">
+            <h3 style="font-size: 14px; color: var(--blue);">How It Works</h3>
+            <ul class="bullet-list mt-8" style="font-size: 13px;">
+              <li>Database enforces who can see and change data</li>
+              <li>Backend checks roles before allowing actions</li>
+              <li>Frontend shows/hides features based on your role</li>
+              <li>Dev user starts as Admin for full testing access</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          Roles are set up automatically during bootstrap. Claude adds app-specific permissions as you build features. The pipeline verifies roles are properly configured before you deploy.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 15: QUICK REFERENCE ==================== -->
+    <div class="slide" data-slide="20">
       <div class="slide-scroll">
         <h2>Quick Reference</h2>
         <p class="subtitle" style="margin-bottom:16px;">Everything on one slide. Bookmark this one.</p>
@@ -1450,7 +1519,7 @@
     </div>
 
     <!-- ==================== SLIDE 16: CLOSING ==================== -->
-    <div class="slide closing-slide" data-slide="19">
+    <div class="slide closing-slide" data-slide="21">
       <div class="closing-line">Build freely. Deploy safely. Quality is automatic.</div>
       <div class="closing-line" style="margin-top: 20px;">Start with MVP. Graduate to production. At your own pace.</div>
       <div class="closing-line" style="color: var(--blue);">All invisible. All automatic. All in plain English.</div>

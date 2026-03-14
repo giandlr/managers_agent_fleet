@@ -14,6 +14,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- UNRELEASED_INSERT_POINT -->
 
+## [v1.2.0] — 2026-03-14
+
+### Added
+- **Cloud deployment:** Four new scripts (`scaffold-cloud-configs.sh`, `deploy-cloud.sh`, `generate-handoff-doc.sh`, `setup-supabase-cloud.sh`) for deploying to Vercel + Supabase Cloud
+- **Cloud Deploy Mode:** Discovery flow with three paths — self-service, IT handoff, and guided setup; triggered by "deploy to cloud", "make this live"
+- **Vercel integration:** `vercel.json` with Nuxt 3 SSR + FastAPI serverless functions at `/api/*`; `api/index.py` adapter wraps existing backend with zero refactoring
+- **IT handoff document:** Auto-generated `docs/deployment-guide.md` with Vercel setup, Supabase Cloud setup, env var mapping, security checklist, monitoring/rollback guide
+- **CORS cloud support:** Dynamic origin list in `backend/main.py` reads `VERCEL_URL` and `PRODUCTION_URL` from environment
+- **Security headers:** X-Content-Type-Options, X-Frame-Options, HSTS, Referrer-Policy configured in `vercel.json`
+- **Playwright e2e testing:** Bootstrap installs `@playwright/test` + `@axe-core/playwright` with chromium-only for speed
+- **Playwright config:** `frontend/playwright.config.ts` with sensible defaults — JSON reporter for CI, HTML for local, screenshots on failure, video on retry
+- **Starter e2e tests:** Three test pattern files (`auth.spec.ts`, `smoke.spec.ts`, `forms.spec.ts`) in `frontend/tests/e2e/` — Claude adapts to actual app during build
+- **Accessibility testing:** `@axe-core/playwright` integration in smoke tests for WCAG compliance checks
+- **RBAC foundation:** `supabase/migrations/00000000000001_rbac.sql` creates `roles` and `user_roles` tables with 4 default roles (admin, manager, member, viewer)
+- **RBAC middleware:** `backend/middleware/rbac.py` with `require_role()` FastAPI dependency for protected endpoints
+- **useRole composable:** `frontend/composables/useRole.ts` with `hasRole()`, `isAdmin()`, `isManager()` for role-aware UI
+- **RBAC RLS policies:** Row Level Security on `roles` (authenticated read, admin modify) and `user_roles` (own read, admin manage all) tables
+- **Dev user admin role:** Bootstrap assigns admin role to `dev@sprout.local` after RBAC migration
+- **RBAC pipeline check:** Verifies `roles` table, RBAC middleware, and useRole composable exist at Team+ gates
+- **GitHub Actions workflow:** Optional `deploy.yml` for CI/CD with Vercel (`--with-github-actions` flag)
+
+### Changed
+- **Deploy gates:** Team gate now requires `ui-tests` and `rbac-check`; all gates include `cloud` config section
+- **Deploy state:** Added `cloud` object tracking provider, deploy URL, Supabase project ref
+- **Pipeline:** Added RBAC verification stage and cloud deploy stage (triggered by `DEPLOY_TARGET=cloud`)
+- **Bootstrap:** Now creates RBAC migration, middleware, composable, Playwright config, and starter tests
+- **Architecture diagram:** Updated to show Vercel hosting both frontend SSR and FastAPI serverless
+- **Tech stack:** Added hosting sections for Vercel and Supabase Cloud
+- **Install script:** Copies cloud deployment scripts alongside existing toolkit files
+- **Gitignore:** Added `.vercel/` and `.env.production`
+- **Manual:** Added 2 new slides (Cloud Deployment, Roles & Permissions), updated to version 1.5 with 22 slides
+
 ## [v1.1.0] — 2026-03-14
 
 ### Added

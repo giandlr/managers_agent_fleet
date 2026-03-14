@@ -81,6 +81,23 @@ Default mode. Write correct code automatically, narrate in plain English.
 
 Trigger: "ship it", "deploy", "go live". Write `deploy` to `.claude/mode`. Ask up to 3 questions via AskUserQuestion with clickable options to determine gate level (mvp/team/production). Run `bash .claude/scripts/run-pipeline.sh <gate>`. Write `build` back to `.claude/mode` when done.
 
+## Cloud Deploy Mode
+
+Trigger: "deploy to cloud", "make this live", "put it online", "deploy to Vercel", "go live" (when context implies cloud, not local).
+
+**Skip condition:** If `vercel.json` exists AND `deploy-state.json` shows previous cloud deploy → skip discovery, go straight to deploy.
+
+**Discovery (AskUserQuestion):**
+- Round 1: "Do you have a Vercel account?" (Yes / No / IT handles this) + "Do you have a Supabase Cloud project?" (Yes / No / Not sure)
+- Round 2: "Where should this go?" (Staging / Production)
+
+**Three paths:**
+1. **Self-service** (has accounts): `scaffold-cloud-configs.sh` → `run-pipeline.sh` → `deploy-cloud.sh`
+2. **IT handoff** (IT handles infra): `scaffold-cloud-configs.sh` → `generate-handoff-doc.sh` → narrate "I created a setup guide for your IT team"
+3. **Guided setup** (unsure): `generate-handoff-doc.sh` → `scaffold-cloud-configs.sh` → narrate what they need
+
+**Architecture:** Frontend (Nuxt 3 SSR) + Backend (FastAPI serverless) both deploy to Vercel. Database on Supabase Cloud.
+
 ## Architectural Rules
 
 - Service role key (`SUPABASE_SERVICE_ROLE_KEY`) stays in backend only — auto-switch to anon key in frontend.

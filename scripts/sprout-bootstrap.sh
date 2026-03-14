@@ -277,6 +277,102 @@ mkdir -p supabase/migrations
 mkdir -p supabase/functions
 echo "  Created supabase/migrations and supabase/functions"
 
+# Create RBAC migration (roles + user_roles tables)
+if [ ! -f "supabase/migrations/00000000000001_rbac.sql" ]; then
+    cat > supabase/migrations/00000000000001_rbac.sql << 'SQLEOF'
+-- RBAC Foundation: roles and user_roles tables
+-- Applied automatically by bootstrap. Do not modify — create new migrations instead.
+
+-- Roles table
+CREATE TABLE IF NOT EXISTS roles (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  name text UNIQUE NOT NULL,
+  description text,
+  permissions jsonb DEFAULT '{}' NOT NULL,
+  created_at timestamptz DEFAULT now() NOT NULL,
+  updated_at timestamptz DEFAULT now() NOT NULL
+);
+
+-- Seed default roles
+INSERT INTO roles (name, description, permissions) VALUES
+  ('admin', 'Full access to all resources', '{"all": true}'),
+  ('manager', 'Can manage team members and resources', '{"manage_team": true, "manage_resources": true}'),
+  ('member', 'Standard access to assigned resources', '{"view": true, "edit_own": true}'),
+  ('viewer', 'Read-only access', '{"view": true}')
+ON CONFLICT (name) DO NOTHING;
+
+-- User-role assignments
+CREATE TABLE IF NOT EXISTS user_roles (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  role_id uuid NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+  assigned_by uuid REFERENCES auth.users(id),
+  created_at timestamptz DEFAULT now() NOT NULL,
+  UNIQUE(user_id, role_id)
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_user_roles_user_id ON user_roles(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_roles_role_id ON user_roles(role_id);
+
+-- RLS on roles table
+ALTER TABLE roles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Authenticated users can read roles" ON roles
+  FOR SELECT TO authenticated USING (true);
+
+CREATE POLICY "Admins can modify roles" ON roles
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON ur.role_id = r.id
+      WHERE ur.user_id = auth.uid() AND r.name = 'admin'
+    )
+  );
+
+-- RLS on user_roles table
+ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read own roles" ON user_roles
+  FOR SELECT TO authenticated USING (user_id = auth.uid());
+
+CREATE POLICY "Admins can manage all roles" ON user_roles
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON ur.role_id = r.id
+      WHERE ur.user_id = auth.uid() AND r.name = 'admin'
+    )
+  );
+
+-- Helper function: get user role name
+CREATE OR REPLACE FUNCTION get_user_role(uid uuid)
+RETURNS text AS $$
+  SELECT r.name FROM roles r
+  JOIN user_roles ur ON r.id = ur.role_id
+  WHERE ur.user_id = uid
+  LIMIT 1;
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Updated_at trigger for roles
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_roles_updated_at
+  BEFORE UPDATE ON roles
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+SQLEOF
+    echo "  Created RBAC migration (supabase/migrations/00000000000001_rbac.sql)"
+fi
+
 # Create seed.sql with dev user for local development
 if [ ! -f "supabase/seed.sql" ]; then
     cat > supabase/seed.sql << 'SEEDEOF'
@@ -305,6 +401,20 @@ INSERT INTO auth.identities (
 ) ON CONFLICT (provider_id, provider) DO NOTHING;
 SEEDEOF
     echo "  Created supabase/seed.sql with dev user (dev@sprout.local / devpassword123)"
+fi
+
+# Append RBAC admin assignment to seed.sql
+if [ -f "supabase/seed.sql" ] && ! grep -q "user_roles" supabase/seed.sql 2>/dev/null; then
+    cat >> supabase/seed.sql << 'SEEDEOF'
+
+-- Assign admin role to dev user (runs after RBAC migration)
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id
+FROM auth.users u, roles r
+WHERE u.email = 'dev@sprout.local' AND r.name = 'admin'
+ON CONFLICT (user_id, role_id) DO NOTHING;
+SEEDEOF
+    echo "  Added admin role assignment to supabase/seed.sql"
 fi
 
 echo ""
@@ -341,6 +451,11 @@ npm install -D prettier eslint-config-prettier 2>&1 | tail -3
 npm install -D vue-tsc typescript 2>&1 | tail -3
 npm install -D vitest @vue/test-utils happy-dom 2>&1 | tail -3
 INSTALLED+=("ESLint, Prettier, vue-tsc, Vitest")
+
+# Install Playwright for e2e testing
+npm install -D @playwright/test @axe-core/playwright 2>&1 | tail -3
+npx playwright install chromium 2>&1 | tail -5
+INSTALLED+=("Playwright (e2e testing)")
 
 # Create/update nuxt.config.ts
 cat > nuxt.config.ts << 'NUXTEOF'
@@ -506,6 +621,210 @@ export default defineNuxtPlugin(async () => {
 })
 PLUGINEOF
 
+# Create Playwright config
+mkdir -p tests/e2e
+cat > playwright.config.ts << 'PWEOF'
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./tests/e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: process.env.CI ? "json" : "html",
+  use: {
+    baseURL: "http://localhost:3000",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
+    video: "on-first-retry",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
+  webServer: {
+    command: "npm run dev -- --port 3000",
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+    timeout: 60000,
+  },
+});
+PWEOF
+echo "  Created playwright.config.ts"
+
+# Create starter e2e test: auth flow
+cat > tests/e2e/auth.spec.ts << 'TESTEOF'
+import { test, expect } from "@playwright/test";
+
+test.describe("Authentication", () => {
+  test("should load home page without errors", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (err) => errors.push(err.message));
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    expect(errors).toHaveLength(0);
+  });
+
+  test("should redirect unauthenticated users to login", async ({ page }) => {
+    // Adapt this test to your app's protected routes
+    // await page.goto("/dashboard");
+    // await expect(page).toHaveURL(/login|auth|signin/);
+  });
+
+  test("should handle login flow", async ({ page }) => {
+    // Adapt: fill in credentials and submit
+    // await page.goto("/login");
+    // await page.fill('[name="email"]', 'dev@sprout.local');
+    // await page.fill('[name="password"]', 'devpassword123');
+    // await page.click('button[type="submit"]');
+    // await expect(page).toHaveURL('/dashboard');
+  });
+});
+TESTEOF
+echo "  Created tests/e2e/auth.spec.ts"
+
+# Create starter e2e test: smoke + accessibility
+cat > tests/e2e/smoke.spec.ts << 'TESTEOF'
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+const pages = ["/"];
+
+test.describe("Smoke Tests", () => {
+  for (const path of pages) {
+    test(`page loads without errors: ${path}`, async ({ page }) => {
+      const errors: string[] = [];
+      page.on("pageerror", (err) => errors.push(err.message));
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      expect(errors).toHaveLength(0);
+    });
+
+    test(`accessibility check: ${path}`, async ({ page }) => {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(results.violations).toHaveLength(0);
+    });
+  }
+
+  test("responsive: mobile viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
+    const viewportWidth = await page.evaluate(() => window.innerWidth);
+    expect(bodyWidth).toBeLessThanOrEqual(viewportWidth + 5);
+  });
+});
+TESTEOF
+echo "  Created tests/e2e/smoke.spec.ts"
+
+# Create starter e2e test: form patterns
+cat > tests/e2e/forms.spec.ts << 'TESTEOF'
+import { test, expect } from "@playwright/test";
+
+test.describe("Form Patterns", () => {
+  test("should validate required fields", async ({ page }) => {
+    // Adapt: navigate to a page with a form
+    await page.goto("/");
+    // const submitButton = page.locator('button[type="submit"]');
+    // if (await submitButton.isVisible()) {
+    //   await submitButton.click();
+    //   await expect(page.locator('.error, [role="alert"]')).toBeVisible();
+    // }
+  });
+
+  test("should show success on valid submission", async ({ page }) => {
+    // Adapt: fill form with valid data and submit
+    await page.goto("/");
+  });
+
+  test("should show validation errors for invalid data", async ({ page }) => {
+    // Adapt: fill form with invalid data
+    await page.goto("/");
+  });
+});
+TESTEOF
+echo "  Created tests/e2e/forms.spec.ts"
+
+# Create useRole composable for RBAC
+cat > composables/useRole.ts << 'TSEOF'
+import { ref, readonly } from "vue";
+
+export function useRole() {
+  const role = ref<string | null>(null);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
+
+  async function fetchRole() {
+    const { useSupabaseClient } = await import("~/services/supabase");
+    const client = useSupabaseClient();
+    if (!client) {
+      role.value = null;
+      return;
+    }
+
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const { data: { user } } = await client.auth.getUser();
+      if (!user) {
+        role.value = null;
+        return;
+      }
+
+      const { data, error: fetchError } = await client
+        .from("user_roles")
+        .select("roles(name)")
+        .eq("user_id", user.id)
+        .limit(1)
+        .single();
+
+      if (fetchError) {
+        error.value = fetchError.message;
+        role.value = null;
+        return;
+      }
+
+      role.value = (data as any)?.roles?.name ?? null;
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : "Failed to fetch role";
+      role.value = null;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  function hasRole(...roles: string[]): boolean {
+    return role.value !== null && roles.includes(role.value);
+  }
+
+  function isAdmin(): boolean {
+    return hasRole("admin");
+  }
+
+  function isManager(): boolean {
+    return hasRole("admin", "manager");
+  }
+
+  return {
+    role: readonly(role),
+    loading: readonly(loading),
+    error: readonly(error),
+    fetchRole,
+    hasRole,
+    isAdmin,
+    isManager,
+  };
+}
+TSEOF
+echo "  Created composables/useRole.ts"
+
 # Update Supabase service to return null instead of throwing when not configured
 cat > services/supabase.ts << 'TSEOF'
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -545,6 +864,8 @@ pkg.scripts.test = 'vitest run';
 pkg.scripts['test:watch'] = 'vitest';
 pkg.scripts.lint = 'eslint .';
 pkg.scripts['type-check'] = 'nuxt prepare && vue-tsc --noEmit';
+pkg.scripts['test:e2e'] = 'playwright test';
+pkg.scripts['test:e2e:ui'] = 'playwright test --ui';
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
 "
 fi
@@ -664,6 +985,61 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 PYEOF
 
+# Create RBAC middleware
+cat > backend/middleware/rbac.py << 'PYEOF'
+"""RBAC middleware — role-based access control for FastAPI routes."""
+from fastapi import Depends, HTTPException, status
+from middleware.auth import get_current_user
+
+
+async def get_current_user_role(user=Depends(get_current_user)):
+    """Fetch the current user's role from user_roles table via Supabase."""
+    import os
+    from supabase import create_client
+
+    url = os.getenv("SUPABASE_URL", "")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+    if not url or not key:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Auth service not configured",
+        )
+
+    sb = create_client(url, key)
+    result = (
+        sb.table("user_roles")
+        .select("roles(name)")
+        .eq("user_id", str(user.id))
+        .limit(1)
+        .maybe_single()
+        .execute()
+    )
+
+    if not result.data:
+        return None
+
+    return result.data.get("roles", {}).get("name")
+
+
+def require_role(*allowed_roles: str):
+    """FastAPI dependency that checks if user has one of the allowed roles.
+
+    Usage:
+        @router.get("/admin", dependencies=[Depends(require_role("admin"))])
+        async def admin_endpoint():
+            ...
+    """
+    async def role_checker(role: str = Depends(get_current_user_role)):
+        if role not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions",
+            )
+        return role
+    return role_checker
+PYEOF
+echo "  Created backend/middleware/rbac.py"
+
 echo "  Backend configured."
 echo ""
 
@@ -735,6 +1111,18 @@ NUXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ENVEOF
 
         echo "  Wrote .env.local and frontend/.env with local credentials."
+        # Assign admin role to dev user after migrations
+        if command -v supabase &>/dev/null; then
+            echo "  Assigning admin role to dev user..."
+            supabase db query "
+              INSERT INTO user_roles (user_id, role_id)
+              SELECT u.id, r.id
+              FROM auth.users u, roles r
+              WHERE u.email = 'dev@sprout.local' AND r.name = 'admin'
+              ON CONFLICT (user_id, role_id) DO NOTHING;
+            " 2>/dev/null || echo "  (RBAC assignment deferred — apply migration first)"
+        fi
+
         INSTALLED+=("Supabase local (running)")
     else
         WARNINGS+=("Failed to start Supabase local — check Docker is running")

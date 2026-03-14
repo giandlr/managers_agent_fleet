@@ -69,6 +69,13 @@ mkdir -p "$PROJECT_DIR/scripts"
 cp "$SCRIPT_DIR/scripts/sprout-bootstrap.sh" "$PROJECT_DIR/scripts/sprout-bootstrap.sh"
 cp "$SCRIPT_DIR/scripts/sprout-init.sh" "$PROJECT_DIR/scripts/sprout-init.sh"
 
+# Cloud deployment scripts
+for script in deploy-cloud.sh scaffold-cloud-configs.sh generate-handoff-doc.sh setup-supabase-cloud.sh; do
+    if [ -f "$SCRIPT_DIR/.claude/scripts/$script" ]; then
+        cp "$SCRIPT_DIR/.claude/scripts/$script" "$PROJECT_DIR/.claude/scripts/$script"
+    fi
+done
+
 # ── 1b. Mode system and deploy gates ─────────────────
 
 # .claude/mode (default: build)
