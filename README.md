@@ -12,11 +12,11 @@ This toolkit turns [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 # 1. Create a new project and initialize git
 mkdir my-app && cd my-app && git init
 
-# 2. Copy and unzip the toolkit
+# 2. Copy the toolkit zip and unzip it (creates managers-agent-fleet/ folder)
 cp /path/to/managers-agent-fleet.zip .
 unzip managers-agent-fleet.zip
 
-# 3. Install the toolkit into your project
+# 3. Install the toolkit (copies files, sets up .gitignore, cleans up)
 bash managers-agent-fleet/install.sh
 
 # 4. Bootstrap your app (scaffolds everything + starts the servers)
@@ -39,14 +39,17 @@ After bootstrap completes, your app is already running:
 
 A development user (`dev@sprout.local` / `devpassword123`) is seeded automatically for local testing.
 
+> **Note:** Toolkit files are automatically excluded from git. When you commit or deploy, only your project's source code is included — never the fleet infrastructure.
+
 ---
 
 ## How It Works
 
-### Two Modes
+### Three Phases
 
-| Mode | When | What Happens |
-|------|------|--------------|
+| Phase | When | What Happens |
+|-------|------|--------------|
+| **Discovery** | New project, first conversation | Claude asks 2-3 rounds of clickable questions to understand what you want, then writes a project brief for your approval before building. |
 | **Build** (default) | You're creating features | Build freely. Only security issues are blocked. Claude auto-fixes quality and explains what it did in plain English. |
 | **Deploy** | You say "ship it" | Claude asks who it's for and runs the appropriate level of checks before sharing. |
 
@@ -60,6 +63,10 @@ A development user (`dev@sprout.local` / `devpassword123`) is seeded automatical
 
 Start at MVP and graduate to Production as your project matures.
 
+### Session Recovery
+
+If your terminal closes or crashes, Claude automatically saves a checkpoint. When you reopen Claude Code, it offers to pick up where you left off — no work is lost.
+
 ---
 
 ## What's Inside
@@ -72,7 +79,8 @@ your-project/
 │   │   └── lib/                # Shared hook utilities
 │   ├── rules/                  # Domain-specific standards (API, auth, DB, frontend)
 │   ├── reviewers/              # Opus code reviewer system prompt
-│   ├── scripts/                # Pipeline scripts (smoke test, review, release)
+│   ├── scripts/                # Pipeline scripts (security, smoke test, review, release)
+│   ├── session/                # Crash recovery checkpoints (gitignored)
 │   ├── settings.json           # Claude Code permissions
 │   ├── mode                    # Current mode: "build" or "deploy"
 │   └── deploy-gates.json       # Gate level definitions (MVP/Team/Production)
@@ -86,11 +94,13 @@ your-project/
 ├── scripts/
 │   └── sprout-bootstrap.sh     # One-command project setup
 ├── manual/
-│   └── sprout-guide.html       # Visual guide (open in browser)
+│   └── sprout-guide.html       # Visual guide (open in browser, 20 slides)
 ├── CLAUDE.md                   # Project rules for Claude Code
 ├── CHANGELOG.md                # Auto-maintained release history
 └── install.sh                  # Toolkit installer
 ```
+
+> All files under `.claude/`, `CLAUDE.md`, `docs/`, and `scripts/` are gitignored after install. Only your app's source code gets committed.
 
 ---
 
@@ -139,18 +149,18 @@ Docker is optional during build mode — the app works as a UI shell without a d
 Claude automatically follows project standards for API design, authentication, database patterns, and frontend conventions. Defined in `.claude/rules/`.
 
 ### Layer 2 — Guards (Hooks)
-Real-time checks on every code write and command execution:
-- **Always blocked:** Hardcoded secrets, dangerous commands, admin keys in frontend
-- **Deploy mode only:** Lint errors, type errors, missing tests
+Real-time checks on every code write and command execution. Block messages are two-part: what was blocked AND what Claude will do instead.
+- **Always blocked:** Hardcoded secrets, dangerous commands, admin keys in frontend, SQL injection, eval()
+- **Build mode warnings (deploy blocks):** Unsafe CORS, missing RLS, unindexed foreign keys, console.log, missing error handling, unbounded queries
 
 ### Layer 3 — Specialist Agents
 Parallel AI workers for tests, security scans, and performance checks. The pipeline orchestrator coordinates them without touching code itself.
 
 ### Layer 4 — Pipeline
-Gate-level validation when you deploy. Runs only the checks appropriate for your chosen level.
+Gate-level validation when you deploy. The pipeline accepts a gate level (`mvp`, `team`, `production`) and runs only the stages required for that level.
 
 ### Layer 5 — Opus Review (Production only)
-An independent AI reviewer (Claude Opus) examines the code with zero knowledge of the development session. Like an external auditor.
+An independent AI reviewer (Claude Opus) examines the code with zero knowledge of the development session. Like an external auditor. Runs with a 5-minute timeout.
 
 ---
 
@@ -170,12 +180,24 @@ An independent AI reviewer (Claude Opus) examines the code with zero knowledge o
 | Create migration | `supabase db diff -f [name]` |
 | Tag a release | `bash .claude/scripts/tag-release.sh v1.0.0` |
 | Record deployment | `bash .claude/scripts/mark-deployed.sh production` |
+| Run pipeline | `bash .claude/scripts/run-pipeline.sh [mvp\|team\|production]` |
+| Security scan | `bash .claude/scripts/security-scan.sh` |
+| Repackage toolkit | `bash scripts/package.sh` |
 
 ---
 
 ## The Manual
 
-Open `manual/sprout-guide.html` in any browser for a visual walkthrough of the entire system. Navigate with arrow keys or click the dots.
+Open `manual/sprout-guide.html` in any browser for a visual walkthrough of the entire system (20 slides). Navigate with arrow keys or click the dots. Works offline — no external dependencies.
+
+---
+
+## Version History
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
+
+- **v1.1** — Discovery mode, session recovery, compressed instructions (~56% token reduction), gate-aware deploy pipeline, 6 new hook detections, two-part error messages, updated manual (20 slides)
+- **v1.0** — Initial release with build/deploy modes, three gate levels, Opus code review, hook system, bootstrap script
 
 ---
 
@@ -183,7 +205,9 @@ Open `manual/sprout-guide.html` in any browser for a visual walkthrough of the e
 
 > "The best engineering practices shouldn't require an engineering degree."
 
+- **Discover first** — Before building, Claude asks the right questions to understand what you want.
 - **Build freely** — Your creative flow is sacred. Quality enforcement stays out of your way during development.
 - **Deploy safely** — When you're ready to share, the right level of checks activates automatically.
 - **Plain English always** — Claude never mentions tool names or technical jargon. It explains what it did and why in language anyone can understand.
 - **Progressive gates** — Start simple with MVP, graduate to Production when ready. The system grows with you.
+- **Nothing lost** — Session checkpoints mean crashes and terminal closes don't cost you progress.

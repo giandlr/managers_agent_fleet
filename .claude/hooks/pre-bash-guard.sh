@@ -31,12 +31,16 @@ fi
 # --- BLOCK: Catastrophic file deletion ---
 if echo "$COMMAND" | grep -qE 'rm\s+-[a-zA-Z]*r[a-zA-Z]*f[a-zA-Z]*\s+/\s*$|rm\s+-[a-zA-Z]*r[a-zA-Z]*f[a-zA-Z]*\s+~'; then
     echo "[$TIMESTAMP] BLOCKED: Destructive rm command: $COMMAND" >> "$AUDIT_LOG"
-    friendly_block "I stopped a command that would permanently delete critical system files. This safety measure prevents accidental data loss."
+    friendly_block_with_action \
+        "This command would permanently delete critical system files." \
+        "I can target specific files instead."
 fi
 
 if echo "$COMMAND" | grep -qE 'rm\s+-rf\s+/\s*$|rm\s+-rf\s+/$|rm\s+-rf\s+~'; then
     echo "[$TIMESTAMP] BLOCKED: Destructive rm command: $COMMAND" >> "$AUDIT_LOG"
-    friendly_block "I stopped a command that would permanently delete critical system files. This safety measure prevents accidental data loss."
+    friendly_block_with_action \
+        "This command would permanently delete critical system files." \
+        "I can target specific files instead."
 fi
 
 # --- BLOCK: Destructive database commands ---
@@ -51,26 +55,34 @@ DB_DESTRUCTIVE_PATTERNS=(
 for pattern in "${DB_DESTRUCTIVE_PATTERNS[@]}"; do
     if echo "$COMMAND" | grep -qiE "$pattern"; then
         echo "[$TIMESTAMP] BLOCKED: Destructive DB command: $COMMAND" >> "$AUDIT_LOG"
-        friendly_block "I stopped a command that would permanently destroy database data. Use soft deletes instead — they're reversible."
+        friendly_block_with_action \
+            "This command would permanently destroy database data." \
+            "I'll use soft deletes or a safe migration."
     fi
 done
 
 # --- BLOCK: Force push to main/master ---
 if echo "$COMMAND" | grep -qE 'git\s+push\s+.*--force.*\s+(main|master)|git\s+push\s+-f.*\s+(main|master)'; then
     echo "[$TIMESTAMP] BLOCKED: Force push to protected branch: $COMMAND" >> "$AUDIT_LOG"
-    friendly_block "I stopped a force push to the main branch. This could overwrite your team's work. Use a feature branch and pull request instead."
+    friendly_block_with_action \
+        "Force push to the main branch could overwrite your team's work." \
+        "I'll use a feature branch and pull request."
 fi
 
 # --- BLOCK: Dangerous permissions ---
 if echo "$COMMAND" | grep -qE 'chmod\s+-R\s+777'; then
     echo "[$TIMESTAMP] BLOCKED: chmod -R 777: $COMMAND" >> "$AUDIT_LOG"
-    friendly_block "I stopped a command that would make all files readable and writable by anyone. This is a security risk."
+    friendly_block_with_action \
+        "This would make all files readable and writable by anyone." \
+        "I'll set more restrictive permissions (755/644)."
 fi
 
 # --- BLOCK: dd commands (disk destruction risk) ---
 if echo "$COMMAND" | grep -qE '\bdd\s+if='; then
     echo "[$TIMESTAMP] BLOCKED: dd command: $COMMAND" >> "$AUDIT_LOG"
-    friendly_block "I stopped a low-level disk command that could destroy data. This needs to be run manually with care."
+    friendly_block_with_action \
+        "This low-level disk command could destroy data." \
+        "This needs manual execution with explicit parameters."
 fi
 
 # --- WARN: Package install without lockfile save ---

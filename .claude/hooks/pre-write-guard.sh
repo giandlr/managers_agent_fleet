@@ -45,7 +45,9 @@ SENSITIVE_PATTERNS=(
 for pattern in "${SENSITIVE_PATTERNS[@]}"; do
     if echo "$FILE_PATH" | grep -qiE "$pattern"; then
         echo "[$TIMESTAMP] BLOCKED: Write to sensitive file: $FILE_PATH" >> "$AUDIT_LOG"
-        friendly_block "I can't save this file because it contains sensitive information (passwords, API keys, certificates). These need to go in environment variables to keep your app secure."
+        friendly_block_with_action \
+            "This file contains sensitive information (passwords, API keys, certificates)." \
+            "I'll store secrets as environment variables instead."
     fi
 done
 
@@ -74,12 +76,13 @@ if echo "$FILE_PATH" | grep -qiE 'frontend/'; then
     CONTENT=$(echo "$INPUT" | grep -oE '"content"\s*:\s*"[^"]*"' | head -1 2>/dev/null || echo "$INPUT")
     if echo "$CONTENT" | grep -qiE 'SUPABASE_SERVICE_ROLE_KEY|SERVICE_ROLE'; then
         echo "[$TIMESTAMP] BLOCKED: Service role key reference in frontend: $FILE_PATH" >> "$AUDIT_LOG"
-        friendly_block "I stopped this because it includes a master database key that would be visible to anyone using your app. I'll use the safe public key instead."
+        friendly_block_with_action \
+            "This includes a master database key that would be visible to anyone using your app." \
+            "I'll switch to the safe public key for frontend code."
     fi
 fi
 
 # --- BLOCK: Hardcoded secrets in content ---
-# Extract content for analysis (best effort from the JSON input)
 CONTENT_CHECK=$(echo "$INPUT" 2>/dev/null || echo "")
 
 SECRET_PATTERNS=(
@@ -95,10 +98,25 @@ SECRET_PATTERNS=(
     'gho_[a-zA-Z0-9]{36}'
 )
 
+# Detect secret type for better messaging
+detect_secret_type() {
+    local content="$1"
+    if echo "$content" | grep -qE 'AKIA[0-9A-Z]{16}'; then echo "AWS access key"; return; fi
+    if echo "$content" | grep -qE 'sk-ant-'; then echo "Anthropic API key"; return; fi
+    if echo "$content" | grep -qE 'sk-[a-zA-Z0-9]{20,}'; then echo "API key"; return; fi
+    if echo "$content" | grep -qE 'ghp_|gho_'; then echo "GitHub token"; return; fi
+    if echo "$content" | grep -qE 'eyJ.*\.eyJ'; then echo "JWT token"; return; fi
+    if echo "$content" | grep -qiE 'password\s*='; then echo "password"; return; fi
+    echo "secret"
+}
+
 for pattern in "${SECRET_PATTERNS[@]}"; do
     if echo "$CONTENT_CHECK" | grep -qE "$pattern"; then
+        SECRET_TYPE=$(detect_secret_type "$CONTENT_CHECK")
         echo "[$TIMESTAMP] BLOCKED: Hardcoded secret detected in: $FILE_PATH (pattern: $pattern)" >> "$AUDIT_LOG"
-        friendly_block "I found a password or API key written directly in the code. These need to be stored as environment variables so they stay private."
+        friendly_block_with_action \
+            "I found a $SECRET_TYPE written directly in the code." \
+            "I'll move this to an environment variable."
     fi
 done
 
@@ -114,7 +132,9 @@ SQL_INJECTION_PATTERNS=(
 for pattern in "${SQL_INJECTION_PATTERNS[@]}"; do
     if echo "$CONTENT_CHECK" | grep -qiE "$pattern"; then
         echo "[$TIMESTAMP] BLOCKED: SQL injection risk in: $FILE_PATH" >> "$AUDIT_LOG"
-        friendly_block "I found a database query built by joining text together, which could let attackers manipulate your data. I'll use the safe query builder instead."
+        friendly_block_with_action \
+            "This database query is built by joining text together, which could let attackers manipulate your data." \
+            "I'll rewrite this using the query builder."
     fi
 done
 
@@ -122,7 +142,9 @@ done
 if echo "$FILE_PATH" | grep -qiE '\.(js|jsx|ts|tsx|vue)$'; then
     if echo "$CONTENT_CHECK" | grep -qE '\beval\s*\('; then
         echo "[$TIMESTAMP] BLOCKED: eval() usage in: $FILE_PATH" >> "$AUDIT_LOG"
-        friendly_block "I found code that runs text as a program, which is a security risk. I'll use a safer approach."
+        friendly_block_with_action \
+            "This code runs text as a program, which is a security risk." \
+            "I'll replace this with a safer approach."
     fi
 fi
 

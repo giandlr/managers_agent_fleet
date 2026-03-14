@@ -1,7 +1,7 @@
 <!--
   Document: Manager's Guide to Building Apps with AI
-  Version:  1.3
-  Date:     2026-03-13
+  Version:  1.4
+  Date:     2026-03-14
   Author:   Sprout
 
   How to use: Open in any browser. Navigate with arrow keys or click dots.
@@ -13,11 +13,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manager's Guide to Building Apps with AI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rethink+Sans:wght@600;700&family=Rubik:wght@600;700&display=swap"
-    rel="stylesheet">
   <style>
     *,
     *::before,
@@ -50,7 +45,7 @@
     body {
       height: 100%;
       overflow: hidden;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
       background: var(--bg-light);
       color: var(--dark-gray);
       -webkit-font-smoothing: antialiased;
@@ -156,7 +151,7 @@
     }
 
     h1 {
-      font-family: 'Rubik', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(36px, 4.5vw, 56px);
       font-weight: 700;
       line-height: 1.1;
@@ -166,7 +161,7 @@
     }
 
     h2 {
-      font-family: 'Rubik', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(30px, 3.5vw, 44px);
       font-weight: 700;
       line-height: 1.15;
@@ -176,7 +171,7 @@
     }
 
     h3 {
-      font-family: 'Rethink Sans', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(17px, 1.6vw, 22px);
       font-weight: 600;
       margin-bottom: 8px;
@@ -198,7 +193,7 @@
     }
 
     .tagline {
-      font-family: 'Rethink Sans', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(14px, 1.2vw, 17px);
       color: var(--purple);
       font-weight: 600;
@@ -478,7 +473,7 @@
     }
 
     .title-slide h1 {
-      font-family: 'Rubik', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(32px, 4.2vw, 56px);
       font-weight: 700;
       letter-spacing: -1px;
@@ -495,7 +490,7 @@
     }
 
     .title-slide .hero-stat {
-      font-family: 'Rethink Sans', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(18px, 1.8vw, 24px);
       font-weight: 600;
       color: var(--green);
@@ -512,7 +507,7 @@
     }
 
     .closing-slide .closing-line {
-      font-family: 'Rubik', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(24px, 2.6vw, 32px);
       font-weight: 600;
       margin: 10px 0;
@@ -520,7 +515,7 @@
     }
 
     .closing-slide .closing-cta {
-      font-family: 'Rubik', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: clamp(42px, 4.5vw, 56px);
       font-weight: 700;
       margin-top: 36px;
@@ -572,7 +567,7 @@
       border-radius: 50%;
       background: var(--purple);
       color: var(--white);
-      font-family: 'Rubik', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-weight: 700;
       font-size: 14px;
       margin-right: 10px;
@@ -621,7 +616,7 @@
     }
 
     .narration-bubble .narration-label {
-      font-family: 'Rethink Sans', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
@@ -656,7 +651,7 @@
 
   <div class="header">
     <div class="logo"><img src="../sprout-logo-01.svg" alt="Sprout"></div>
-    <div class="slide-counter" id="slideCounter">1 / 17</div>
+    <div class="slide-counter" id="slideCounter">1 / 20</div>
   </div>
 
   <div class="nav-dots" id="navDots"></div>
@@ -877,8 +872,38 @@
       </div>
     </div>
 
-    <!-- ==================== SLIDE 7: INSTALLATION ==================== -->
+    <!-- ==================== SLIDE: START WITH DISCOVERY ==================== -->
     <div class="slide" data-slide="6">
+      <div class="slide-scroll">
+        <h2>Start With <span class="highlight-purple">Discovery</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">When you start a brand-new project, Claude asks a few quick questions before building. This takes about 2 minutes and saves hours of rework.</p>
+
+        <div class="grid-3 mb-16">
+          <div class="card c-purple" style="padding: 20px; text-align: center;">
+            <span style="font-size: 28px; display: block; margin-bottom: 8px;">&#x1f4ac;</span>
+            <h3>Round 1: Big Picture</h3>
+            <p class="mt-8">"What kind of app is this?" and "Who will use it?" &mdash; Claude gives you clickable options so you don't have to type.</p>
+          </div>
+          <div class="card c-green" style="padding: 20px; text-align: center;">
+            <span style="font-size: 28px; display: block; margin-bottom: 8px;">&#x2705;</span>
+            <h3>Round 2: Features</h3>
+            <p class="mt-8">Based on your answer, Claude suggests features as a checklist. Pick what you want, skip what you don't. Claude also challenges: "Is there anything I'm missing?"</p>
+          </div>
+          <div class="card c-blue" style="padding: 20px; text-align: center;">
+            <span style="font-size: 28px; display: block; margin-bottom: 8px;">&#x1f512;</span>
+            <h3>Round 3: Access</h3>
+            <p class="mt-8">"Should everyone see everything, or only their own stuff?" &mdash; This determines the security rules Claude puts in place.</p>
+          </div>
+        </div>
+
+        <div class="big-quote">
+          After 2&ndash;3 quick rounds, Claude writes a project brief and asks "Does this look right?" Once you confirm, building starts immediately. If your initial request is already detailed, Claude skips straight to the brief.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 7: INSTALLATION ==================== -->
+    <div class="slide" data-slide="7">
       <div class="slide-scroll">
         <h2>Installation &mdash; One-Time Setup</h2>
         <p class="subtitle" style="margin-bottom:20px;">Before your first project, run a single setup command. After that, you never touch it again.</p>
@@ -896,11 +921,12 @@
         <div class="card c-purple mb-16" style="display: flex; align-items: flex-start; gap: 16px;">
           <span class="step-num">2</span>
           <div>
-            <h3>Copy and unzip the toolkit</h3>
+            <h3>Copy the toolkit zip into your project and unzip it</h3>
             <div style="background: #f8f8f8; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 13px; color: var(--dark-gray); margin-top: 8px;">
               cp /path/to/managers-agent-fleet.zip .<br>
               unzip managers-agent-fleet.zip
             </div>
+            <p class="sm mt-8">This creates a <strong>managers-agent-fleet/</strong> folder inside your project with all the toolkit files.</p>
           </div>
         </div>
 
@@ -911,6 +937,7 @@
             <div style="background: #f8f8f8; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 13px; color: var(--dark-gray); margin-top: 8px;">
               bash managers-agent-fleet/install.sh
             </div>
+            <p class="sm mt-8">This copies the toolkit files into the right locations, sets up your .gitignore so toolkit files are never committed, and cleans up the zip and installer folder automatically.</p>
           </div>
         </div>
 
@@ -950,7 +977,7 @@
     </div>
 
     <!-- ==================== SLIDE 8: WHAT BOOTSTRAP CREATES ==================== -->
-    <div class="slide" data-slide="7">
+    <div class="slide" data-slide="8">
       <div class="slide-scroll">
         <h2>What <span class="highlight-green">Bootstrap</span> Creates For You</h2>
         <p class="subtitle" style="margin-bottom:16px;">One command sets up your entire app. Here's everything that's ready when it finishes.</p>
@@ -1003,7 +1030,7 @@
     </div>
 
     <!-- ==================== SLIDE 9: THE PIPELINE (DEPLOY MODE) ==================== -->
-    <div class="slide" data-slide="8">
+    <div class="slide" data-slide="9">
       <div class="slide-scroll">
         <h2>The Deploy Pipeline &mdash; What Runs When You Ship</h2>
         <p class="subtitle" style="margin-bottom:16px;">When you say "ship it," the pipeline runs at your chosen level. Here's what the full production pipeline looks like:</p>
@@ -1048,7 +1075,7 @@
     </div>
 
     <!-- ==================== SLIDE 9: OPUS REVIEW ==================== -->
-    <div class="slide" data-slide="9">
+    <div class="slide" data-slide="10">
       <div class="slide-scroll">
         <h2>The Opus Review &mdash; Your Independent Auditor</h2>
         <p class="subtitle" style="margin-bottom:16px;">At the production level, after all tests pass, a separate senior AI reviews the code from scratch with zero bias.</p>
@@ -1079,8 +1106,47 @@
       </div>
     </div>
 
+    <!-- ==================== SLIDE: DEPLOY FLOW ==================== -->
+    <div class="slide" data-slide="11">
+      <div class="slide-scroll">
+        <h2>What Happens When You Say <span class="highlight-blue">"Ship It"</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">The entire deploy process is a conversation. Claude asks questions, you click answers, and the right checks run automatically.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="card c-purple" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+            <span class="step-num">1</span>
+            <div>
+              <h3>You say "ship it" or "share with my team"</h3>
+              <p>Claude switches to deploy mode automatically.</p>
+            </div>
+          </div>
+          <div class="card c-blue" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+            <span class="step-num" style="background: var(--blue);">2</span>
+            <div>
+              <h3>Claude asks: "Who is this for?"</h3>
+              <p>You get clickable options: Just me (MVP) / My team (Team) / External users (Production). Claude also asks about data visibility and external access if needed.</p>
+            </div>
+          </div>
+          <div class="card c-green" style="padding: 16px; display: flex; align-items: center; gap: 16px;">
+            <span class="step-num" style="background: var(--green);">3</span>
+            <div>
+              <h3>The right checks run automatically</h3>
+              <p>MVP: security + smoke test. Team: + unit tests + auth check. Production: + full tests + performance + Opus code review.</p>
+            </div>
+          </div>
+          <div class="card" style="padding: 16px; display: flex; align-items: center; gap: 16px; background: var(--bg-lavender);">
+            <span class="step-num" style="background: var(--purple);">4</span>
+            <div>
+              <h3>Claude reports the results in plain English</h3>
+              <p>If something fails, Claude fixes it and re-runs. When everything passes, you're back in build mode with a changelog entry.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== SLIDE 10: ENTERPRISE FEATURES ==================== -->
-    <div class="slide" data-slide="10">
+    <div class="slide" data-slide="12">
       <div class="slide-scroll">
         <h2>Enterprise Features &mdash; Built In, Not Bolted On</h2>
         <p class="subtitle" style="margin-bottom:16px;">Every app you build automatically includes enterprise-grade features. They're split into two tiers.</p>
@@ -1129,7 +1195,7 @@
     </div>
 
     <!-- ==================== SLIDE 11: UNDERSTANDING BLOCKED ==================== -->
-    <div class="slide" data-slide="11">
+    <div class="slide" data-slide="13">
       <div class="slide-scroll">
         <h2>When Something Is <span style="color: var(--red);">Blocked</span></h2>
         <p class="subtitle" style="margin-bottom:16px;">In build mode, only security issues cause blocks. In deploy mode, quality checks can also block. Either way, messages are always in plain English.</p>
@@ -1165,11 +1231,11 @@
               <h3 style="color: var(--purple);">What you'll see</h3>
               <div class="narration-bubble mt-8" style="background: white;">
                 <span class="narration-label">Claude says</span>
-                "I found a password written directly in the code. I'm moving it to a secure location so it won't be exposed."
+                "A password was found written directly in the code. I'll move this to an environment variable."
               </div>
               <div class="narration-bubble mt-8" style="background: white;">
                 <span class="narration-label">Claude says</span>
-                "I noticed the form didn't show an error message when something goes wrong. I added one so users know what happened."
+                "This includes a master database key visible to app users. I'll switch to the safe public key for frontend code."
               </div>
             </div>
           </div>
@@ -1178,7 +1244,7 @@
     </div>
 
     <!-- ==================== SLIDE 12: FRIENDLY NARRATION ==================== -->
-    <div class="slide" data-slide="12">
+    <div class="slide" data-slide="14">
       <div class="slide-scroll">
         <h2>Claude Speaks <span class="highlight-purple">Plain English</span></h2>
         <p class="subtitle" style="margin-bottom:20px;">Claude always explains what it did and why &mdash; in language anyone can understand. No technical jargon, ever.</p>
@@ -1219,7 +1285,7 @@
     </div>
 
     <!-- ==================== SLIDE 13: THE CHANGELOG ==================== -->
-    <div class="slide" data-slide="13">
+    <div class="slide" data-slide="15">
       <div class="slide-scroll">
         <h2>The Changelog &mdash; Your Project History</h2>
         <p class="subtitle" style="margin-bottom:16px;">Two automatic records are kept for you. Changelog entries are only created when you deploy &mdash; not during regular building.</p>
@@ -1264,7 +1330,7 @@
     </div>
 
     <!-- ==================== SLIDE 14: RELEASES & DEPLOYMENT ==================== -->
-    <div class="slide" data-slide="14">
+    <div class="slide" data-slide="16">
       <div class="slide-scroll">
         <h2>Releases &amp; Deployment</h2>
         <p class="subtitle" style="margin-bottom:16px;">Two optional actions you can take when you're ready to ship.</p>
@@ -1304,8 +1370,41 @@
       </div>
     </div>
 
+    <!-- ==================== SLIDE: TIPS ==================== -->
+    <div class="slide" data-slide="17">
+      <div class="slide-scroll">
+        <h2>Tips for Working With <span class="highlight-green">Claude</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">A few things that make the experience smoother.</p>
+
+        <div class="grid-2" style="gap: 16px;">
+          <div class="card c-green" style="padding: 20px;">
+            <h3 style="color: #1a8a00;">Do</h3>
+            <ul class="bullet-list mt-8">
+              <li><strong>Be specific about what you want</strong> &mdash; "Add a dashboard showing monthly sales by region" works better than "Add analytics"</li>
+              <li><strong>Say when something looks wrong</strong> &mdash; "That chart should be a bar chart, not a pie chart" helps Claude fix it immediately</li>
+              <li><strong>Start small and iterate</strong> &mdash; Build one feature at a time. Each one gets tested and secured as you go.</li>
+              <li><strong>Close and reopen Claude if things feel stuck</strong> &mdash; Fresh sessions pick up where you left off thanks to crash recovery</li>
+            </ul>
+          </div>
+          <div class="card c-red" style="padding: 20px;">
+            <h3 style="color: var(--red);">Don't</h3>
+            <ul class="bullet-list mt-8">
+              <li><strong>Don't ask Claude to skip safety checks</strong> &mdash; They exist to protect your data and users</li>
+              <li><strong>Don't worry about the terminal</strong> &mdash; Claude handles commands, servers, and databases for you</li>
+              <li><strong>Don't try to read the code</strong> &mdash; Unless you want to! Everything is explained in plain English</li>
+              <li><strong>Don't hesitate to change your mind</strong> &mdash; "Actually, make it a table instead" is perfectly fine at any stage</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="big-quote mt-16">
+          Claude remembers your project context between sessions. If your terminal closes unexpectedly, just reopen Claude Code and it will offer to pick up where you left off.
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== SLIDE 15: QUICK REFERENCE ==================== -->
-    <div class="slide" data-slide="15">
+    <div class="slide" data-slide="18">
       <div class="slide-scroll">
         <h2>Quick Reference</h2>
         <p class="subtitle" style="margin-bottom:16px;">Everything on one slide. Bookmark this one.</p>
@@ -1351,7 +1450,7 @@
     </div>
 
     <!-- ==================== SLIDE 16: CLOSING ==================== -->
-    <div class="slide closing-slide" data-slide="16">
+    <div class="slide closing-slide" data-slide="19">
       <div class="closing-line">Build freely. Deploy safely. Quality is automatic.</div>
       <div class="closing-line" style="margin-top: 20px;">Start with MVP. Graduate to production. At your own pace.</div>
       <div class="closing-line" style="color: var(--blue);">All invisible. All automatic. All in plain English.</div>

@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 # Post-edit enforcement: mode-aware checks after every file write/edit
-# BUILD mode: security-only blocks (gitleaks, service role key, direct supabase calls)
-# DEPLOY mode: full pipeline enforcement (linters, type checks, enterprise checks)
+# BUILD mode: security-only blocks + warnings logged
+# DEPLOY mode: full pipeline enforcement
 # Triggered on: PostToolUse Write|Edit
 # Exit 0 = pass/warn, Exit 2 = block (Claude must fix)
 
 # Safety: unexpected errors allow the command through (intentional exit 2 still blocks)
-# Must be first — catches errors from source and all subsequent commands
 trap 'exit 0' ERR
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -29,6 +28,11 @@ echo "[$TIMESTAMP] POST-EDIT: $FILE_PATH" >> "$AUDIT_LOG"
 if [[ -z "$FILE_PATH" || ! -f "$FILE_PATH" ]]; then
     exit 0
 fi
+
+# --- Session file log (append modified file for crash recovery) ---
+SESSION_DIR=".claude/session"
+mkdir -p "$SESSION_DIR" 2>/dev/null || true
+echo "$FILE_PATH" >> "$SESSION_DIR/file-log.txt"
 
 MODE=$(get_mode)
 BLOCKED=false
@@ -60,7 +64,7 @@ if echo "$FILE_PATH" | grep -qiE 'frontend/'; then
     FILE_CONTENT=$(cat "$FILE_PATH" 2>/dev/null || echo "")
     if echo "$FILE_CONTENT" | grep -qiE 'SUPABASE_SERVICE_ROLE_KEY|SERVICE_ROLE_KEY'; then
         BLOCKED=true
-        BLOCK_MESSAGES+=("I stopped this because it includes a master database key that would be visible to anyone using your app. I'll use the safe public key instead.")
+        BLOCK_MESSAGES+=("This includes a master database key visible to app users. I'll switch to the safe public key.")
         echo "[$TIMESTAMP] BLOCKED: Service role key in frontend file $FILE_PATH" >> "$AUDIT_LOG"
     fi
 fi
@@ -71,25 +75,24 @@ if echo "$FILE_PATH" | grep -qiE 'frontend/.*\.(ts|tsx|js|jsx|vue)$'; then
         FILE_CONTENT=$(cat "$FILE_PATH" 2>/dev/null || echo "")
         if echo "$FILE_CONTENT" | grep -qE 'supabase\.(from|rpc|auth|storage|channel|removeChannel)\s*\('; then
             BLOCKED=true
-            BLOCK_MESSAGES+=("This file calls the Supabase client directly. All data access must go through frontend/services/ so the backend can be swapped without rewriting components.")
+            BLOCK_MESSAGES+=("This file calls the Supabase client directly. All data access must go through frontend/services/.")
             echo "[$TIMESTAMP] BLOCKED: Direct Supabase call in $FILE_PATH" >> "$AUDIT_LOG"
         fi
     fi
 fi
 
 # ============================================================
-# BUILD MODE: log everything else but do not block
+# BUILD MODE: log warnings + new detections (warn only)
 # ============================================================
 if [[ "$MODE" == "build" ]]; then
 
-    # Log warnings that would be enforced in deploy mode
     if echo "$FILE_PATH" | grep -qE '\.(ts|tsx|js|jsx|vue)$'; then
-        # Log console.log usage
+        # Console.log
         if grep -qE '\bconsole\.(log|debug)\b' "$FILE_PATH" 2>/dev/null; then
             echo "[$TIMESTAMP] AUDIT (build): console.log found in $FILE_PATH" >> "$AUDIT_LOG"
         fi
 
-        # Log oversized components
+        # Oversized components
         if echo "$FILE_PATH" | grep -qE '\.vue$'; then
             LINE_COUNT=$(file_line_count "$FILE_PATH")
             if [[ "$LINE_COUNT" -gt 200 ]]; then
@@ -98,21 +101,21 @@ if [[ "$MODE" == "build" ]]; then
 
             FILE_CONTENT=$(cat "$FILE_PATH" 2>/dev/null || echo "")
 
-            # Log missing loading state
+            # Missing loading state
             if echo "$FILE_CONTENT" | grep -qE 'await\s|\.then\s*\(|useFetch|useAsyncData|useLazyFetch'; then
                 if ! echo "$FILE_CONTENT" | grep -qiE 'loading|isLoading|pending|isFetching|skeleton|spinner'; then
                     echo "[$TIMESTAMP] AUDIT (build): Missing loading state in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
 
-            # Log missing error state
+            # Missing error state
             if echo "$FILE_CONTENT" | grep -qE 'await\s|\.then\s*\(|useFetch|useAsyncData|useLazyFetch'; then
                 if ! echo "$FILE_CONTENT" | grep -qiE 'error|isError|catch\s*\(|\.catch|onError|ErrorAlert|error-alert'; then
                     echo "[$TIMESTAMP] AUDIT (build): Missing error state in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
 
-            # Log missing empty state
+            # Missing empty state
             if echo "$FILE_CONTENT" | grep -qE 'v-for\s*='; then
                 if ! echo "$FILE_CONTENT" | grep -qiE '\.length\s*===?\s*0|empty|no-data|no-results|EmptyState|empty-state'; then
                     echo "[$TIMESTAMP] AUDIT (build): Missing empty state for list in $FILE_PATH" >> "$AUDIT_LOG"
@@ -122,12 +125,12 @@ if [[ "$MODE" == "build" ]]; then
     fi
 
     if echo "$FILE_PATH" | grep -qE '\.py$'; then
-        # Log bare except clauses
+        # Bare except clauses
         if grep -qE '^\s*except\s*:' "$FILE_PATH" 2>/dev/null; then
             echo "[$TIMESTAMP] AUDIT (build): Bare except clause in $FILE_PATH" >> "$AUDIT_LOG"
         fi
 
-        # Log route files without rate limiting
+        # Route files without rate limiting
         if echo "$FILE_PATH" | grep -qiE '(routes/|router|endpoint).*\.py$'; then
             FILE_CONTENT=$(cat "$FILE_PATH" 2>/dev/null || echo "")
             if echo "$FILE_CONTENT" | grep -qE '@(app|router)\.(get|post|put|patch|delete)\s*\('; then
@@ -135,15 +138,50 @@ if [[ "$MODE" == "build" ]]; then
                     echo "[$TIMESTAMP] AUDIT (build): Missing rate limiting in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
+
+            # Missing error handling in route handlers
+            if echo "$FILE_CONTENT" | grep -qE '@(app|router)\.(get|post|put|patch|delete)\s*\('; then
+                if ! echo "$FILE_CONTENT" | grep -qiE 'try:|except\s|HTTPException|exception_handler|@app\.exception'; then
+                    echo "[$TIMESTAMP] AUDIT (build): Missing error handling in route handlers $FILE_PATH" >> "$AUDIT_LOG"
+                fi
+            fi
+        fi
+
+        # Unsafe CORS
+        if grep -qiE 'allow_origins\s*=\s*\[\s*"\*"\s*\]|Access-Control-Allow-Origin.*\*' "$FILE_PATH" 2>/dev/null; then
+            echo "[$TIMESTAMP] AUDIT (build): Unsafe CORS (allow all origins) in $FILE_PATH" >> "$AUDIT_LOG"
         fi
     fi
 
-    # Log migration warnings
+    # Migration warnings
     if echo "$FILE_PATH" | grep -qiE 'supabase/migrations/.*\.sql$'; then
         FILE_CONTENT=$(cat "$FILE_PATH" 2>/dev/null || echo "")
+
+        # Missing RLS
         if echo "$FILE_CONTENT" | grep -qiE 'CREATE\s+TABLE'; then
             if ! echo "$FILE_CONTENT" | grep -qiE 'ALTER\s+TABLE.*ENABLE\s+ROW\s+LEVEL\s+SECURITY|CREATE\s+POLICY|ROW\s+LEVEL\s+SECURITY'; then
                 echo "[$TIMESTAMP] AUDIT (build): Missing RLS policy in migration $FILE_PATH" >> "$AUDIT_LOG"
+            fi
+        fi
+
+        # Unindexed FK
+        if echo "$FILE_CONTENT" | grep -qiE 'REFERENCES\s'; then
+            FK_COLUMNS=$(echo "$FILE_CONTENT" | grep -ioE '\w+\s+\w+\s+REFERENCES' | awk '{print $1}')
+            if [[ -n "$FK_COLUMNS" ]]; then
+                for col in $FK_COLUMNS; do
+                    if ! echo "$FILE_CONTENT" | grep -qiE "CREATE\s+INDEX.*$col|INDEX.*\($col"; then
+                        echo "[$TIMESTAMP] AUDIT (build): Unindexed foreign key '$col' in $FILE_PATH" >> "$AUDIT_LOG"
+                    fi
+                done
+            fi
+        fi
+    fi
+
+    # SELECT * without limit (frontend/backend)
+    if echo "$FILE_PATH" | grep -qE '\.(ts|tsx|js|jsx|vue|py)$'; then
+        if grep -qE '\.select\(\s*["\x27]\*["\x27]\s*\)' "$FILE_PATH" 2>/dev/null; then
+            if ! grep -qE '\.limit\s*\(' "$FILE_PATH" 2>/dev/null; then
+                echo "[$TIMESTAMP] AUDIT (build): SELECT * without .limit() in $FILE_PATH" >> "$AUDIT_LOG"
             fi
         fi
     fi
@@ -164,15 +202,19 @@ elif [[ "$MODE" == "deploy" ]]; then
                 ESLINT_EXIT=$?
                 if [[ $ESLINT_EXIT -ne 0 ]]; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("I found code style issues that need fixing. Run ESLint to see the details.")
+                    BLOCK_MESSAGES+=("I found code style issues that need fixing before deploying.")
                     echo "[$TIMESTAMP] BLOCKED: ESLint failed on $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             }
         fi
 
-        # Console.log warning
-        if grep -qE '\bconsole\.(log|debug)\b' "$FILE_PATH" 2>/dev/null; then
-            echo "[$TIMESTAMP] WARNING: console.log found in $FILE_PATH" >> "$AUDIT_LOG"
+        # Console.log — block in deploy (exclude test files)
+        if ! echo "$FILE_PATH" | grep -qE '(\.test\.|\.spec\.|__tests__/)'; then
+            if grep -qE '\bconsole\.(log|debug)\b' "$FILE_PATH" 2>/dev/null; then
+                BLOCKED=true
+                BLOCK_MESSAGES+=("Console.log statements must be removed before deploying.")
+                echo "[$TIMESTAMP] BLOCKED: console.log in deploy mode $FILE_PATH" >> "$AUDIT_LOG"
+            fi
         fi
 
         # Run corresponding test file
@@ -197,7 +239,7 @@ elif [[ "$MODE" == "deploy" ]]; then
             if echo "$FILE_CONTENT" | grep -qE 'await\s|\.then\s*\(|useFetch|useAsyncData|useLazyFetch'; then
                 if ! echo "$FILE_CONTENT" | grep -qiE 'loading|isLoading|pending|isFetching|skeleton|spinner'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("This page needs a loading indicator so users know something is happening while data loads.")
+                    BLOCK_MESSAGES+=("This page needs a loading indicator so users know data is loading.")
                     echo "[$TIMESTAMP] BLOCKED: Missing loading state in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
@@ -206,7 +248,7 @@ elif [[ "$MODE" == "deploy" ]]; then
             if echo "$FILE_CONTENT" | grep -qE 'await\s|\.then\s*\(|useFetch|useAsyncData|useLazyFetch'; then
                 if ! echo "$FILE_CONTENT" | grep -qiE 'error|isError|catch\s*\(|\.catch|onError|ErrorAlert|error-alert'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("This page fetches data but has no error handling. Users need to see a helpful message when something goes wrong.")
+                    BLOCK_MESSAGES+=("This page needs error handling so users see a message when something goes wrong.")
                     echo "[$TIMESTAMP] BLOCKED: Missing error state in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
@@ -215,15 +257,23 @@ elif [[ "$MODE" == "deploy" ]]; then
             if echo "$FILE_CONTENT" | grep -qE 'v-for\s*='; then
                 if ! echo "$FILE_CONTENT" | grep -qiE '\.length\s*===?\s*0|empty|no-data|no-results|EmptyState|empty-state'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("This list needs an empty state so users see a helpful message when there are no items to show.")
+                    BLOCK_MESSAGES+=("This list needs an empty state for when there are no items.")
                     echo "[$TIMESTAMP] BLOCKED: Missing empty state for list in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
 
-            # Oversized component warning
             LINE_COUNT=$(file_line_count "$FILE_PATH")
             if [[ "$LINE_COUNT" -gt 200 ]]; then
                 echo "[$TIMESTAMP] WARNING: Oversized component $FILE_PATH ($LINE_COUNT lines)" >> "$AUDIT_LOG"
+            fi
+        fi
+
+        # SELECT * without limit (JS/TS)
+        if grep -qE '\.select\(\s*["\x27]\*["\x27]\s*\)' "$FILE_PATH" 2>/dev/null; then
+            if ! grep -qE '\.limit\s*\(' "$FILE_PATH" 2>/dev/null; then
+                BLOCKED=true
+                BLOCK_MESSAGES+=("This query selects all columns without a limit. Add .limit() to prevent unbounded results.")
+                echo "[$TIMESTAMP] BLOCKED: SELECT * without .limit() in $FILE_PATH" >> "$AUDIT_LOG"
             fi
         fi
     fi
@@ -237,11 +287,10 @@ elif [[ "$MODE" == "deploy" ]]; then
         if command -v ruff &>/dev/null; then
             RUFF_OUTPUT=$(ruff check "$FILE_PATH" 2>&1) || {
                 BLOCKED=true
-                BLOCK_MESSAGES+=("I found formatting issues in the Python code that need to be resolved before deploying.")
+                BLOCK_MESSAGES+=("Python formatting issues need to be resolved before deploying.")
                 echo "[$TIMESTAMP] BLOCKED: ruff check failed on $FILE_PATH" >> "$AUDIT_LOG"
             }
 
-            # Ruff format check
             ruff format --check "$FILE_PATH" >> "$AUDIT_LOG" 2>&1 || {
                 echo "[$TIMESTAMP] WARNING: ruff format check failed on $FILE_PATH" >> "$AUDIT_LOG"
             }
@@ -253,7 +302,7 @@ elif [[ "$MODE" == "deploy" ]]; then
                 BANDIT_EXIT=$?
                 if [[ $BANDIT_EXIT -ne 0 ]] && echo "$BANDIT_OUTPUT" | grep -qiE 'Severity:\s*High'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("I found a high-severity security issue in this Python file that must be fixed before deploying.")
+                    BLOCK_MESSAGES+=("High-severity security issue found — must be fixed before deploying.")
                     echo "[$TIMESTAMP] BLOCKED: bandit HIGH severity in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             }
@@ -265,16 +314,16 @@ elif [[ "$MODE" == "deploy" ]]; then
                 MYPY_EXIT=$?
                 if [[ $MYPY_EXIT -ne 0 ]] && echo "$MYPY_OUTPUT" | grep -qE 'error:'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("I found type errors in this Python file. These need to be fixed so the code behaves predictably.")
+                    BLOCK_MESSAGES+=("Type errors need to be fixed before deploying.")
                     echo "[$TIMESTAMP] BLOCKED: mypy errors in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             }
         fi
 
-        # Bare except clause check
+        # Bare except clause
         if grep -qE '^\s*except\s*:' "$FILE_PATH" 2>/dev/null; then
             BLOCKED=true
-            BLOCK_MESSAGES+=("This file has a bare 'except:' clause that catches everything, including system exits. Specify the exception type instead (e.g., 'except ValueError:').")
+            BLOCK_MESSAGES+=("Bare 'except:' catches everything including system exits. Specify the exception type.")
             echo "[$TIMESTAMP] BLOCKED: bare except in $FILE_PATH" >> "$AUDIT_LOG"
         fi
 
@@ -291,6 +340,13 @@ elif [[ "$MODE" == "deploy" ]]; then
             fi
         fi
 
+        # Unsafe CORS
+        if grep -qiE 'allow_origins\s*=\s*\[\s*"\*"\s*\]|Access-Control-Allow-Origin.*\*' "$FILE_PATH" 2>/dev/null; then
+            BLOCKED=true
+            BLOCK_MESSAGES+=("CORS is set to allow all origins. Restrict to your app's domain(s) before deploying.")
+            echo "[$TIMESTAMP] BLOCKED: Unsafe CORS in $FILE_PATH" >> "$AUDIT_LOG"
+        fi
+
         # Route file enterprise checks
         if echo "$FILE_PATH" | grep -qiE '(routes/|router|endpoint).*\.py$'; then
             FILE_CONTENT=$(cat "$FILE_PATH" 2>/dev/null || echo "")
@@ -299,7 +355,7 @@ elif [[ "$MODE" == "deploy" ]]; then
             if echo "$FILE_CONTENT" | grep -qE '@(app|router)\.(get|post|put|patch|delete)\s*\('; then
                 if ! echo "$FILE_CONTENT" | grep -qiE '@limiter\.limit|RateLimitMiddleware|rate_limit|slowapi|Depends\(.*rate'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("This API route needs rate limiting to prevent abuse. Add a rate limit decorator like @limiter.limit(\"10/minute\").")
+                    BLOCK_MESSAGES+=("This API route needs rate limiting to prevent abuse.")
                     echo "[$TIMESTAMP] BLOCKED: Missing rate limiting in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
@@ -308,7 +364,7 @@ elif [[ "$MODE" == "deploy" ]]; then
             if echo "$FILE_CONTENT" | grep -qiE '@(app|router)\.get\s*\(' && echo "$FILE_CONTENT" | grep -qiE 'list|all|index|search|fetch.*s\b'; then
                 if ! echo "$FILE_CONTENT" | grep -qiE 'limit|offset|page|cursor|pagination|Pagination|skip'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("This list endpoint needs pagination so it does not return unbounded results. Add limit/cursor parameters.")
+                    BLOCK_MESSAGES+=("This list endpoint needs pagination. Add limit/cursor parameters.")
                     echo "[$TIMESTAMP] BLOCKED: Missing pagination in list endpoint $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
@@ -317,8 +373,17 @@ elif [[ "$MODE" == "deploy" ]]; then
             if echo "$FILE_CONTENT" | grep -qiE '@(app|router)\.(delete|post)\s*\(' && echo "$FILE_CONTENT" | grep -qiE 'delete|remove|destroy'; then
                 if ! echo "$FILE_CONTENT" | grep -qiE 'deleted_at|soft.delete|is_deleted|mark.*deleted'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("This delete endpoint removes data permanently. Use soft deletes instead (set deleted_at = now()) so data can be recovered.")
+                    BLOCK_MESSAGES+=("This delete endpoint removes data permanently. Use soft deletes (set deleted_at).")
                     echo "[$TIMESTAMP] BLOCKED: Hard delete instead of soft delete in $FILE_PATH" >> "$AUDIT_LOG"
+                fi
+            fi
+
+            # Missing error handling in route handlers
+            if echo "$FILE_CONTENT" | grep -qE '@(app|router)\.(get|post|put|patch|delete)\s*\('; then
+                if ! echo "$FILE_CONTENT" | grep -qiE 'try:|except\s|HTTPException|exception_handler|@app\.exception'; then
+                    BLOCKED=true
+                    BLOCK_MESSAGES+=("Route handlers need error handling (try/except or exception middleware).")
+                    echo "[$TIMESTAMP] BLOCKED: Missing error handling in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
             fi
 
@@ -342,7 +407,7 @@ elif [[ "$MODE" == "deploy" ]]; then
                 if ! echo "$FILE_PATH" | grep -qiE 'login|register|signup|invite|health'; then
                     if ! echo "$FILE_CONTENT" | grep -qiE 'Depends\(.*auth|Depends\(.*current_user|Depends\(.*get_user|verify_token|require_auth|security'; then
                         BLOCKED=true
-                        BLOCK_MESSAGES+=("This protected route needs an auth guard. Add Depends(get_current_user) so only authenticated users can access it.")
+                        BLOCK_MESSAGES+=("This protected route needs an auth guard. Add Depends(get_current_user).")
                         echo "[$TIMESTAMP] BLOCKED: Missing auth guard in $FILE_PATH" >> "$AUDIT_LOG"
                     fi
                 fi
@@ -352,9 +417,18 @@ elif [[ "$MODE" == "deploy" ]]; then
             if echo "$FILE_CONTENT" | grep -qiE 'body\.user_id|request\.json.*user_id|data\[.user_id.\]|payload\.user_id'; then
                 if ! echo "$FILE_CONTENT" | grep -qiE 'current_user\.id|token\.sub|jwt.*user|auth\.uid'; then
                     BLOCKED=true
-                    BLOCK_MESSAGES+=("This file reads the user ID from the request body, which can be faked. Always get the user identity from the JWT token instead.")
+                    BLOCK_MESSAGES+=("User ID is read from request body (can be faked). Get it from the JWT token instead.")
                     echo "[$TIMESTAMP] BLOCKED: User ID from request body in $FILE_PATH" >> "$AUDIT_LOG"
                 fi
+            fi
+        fi
+
+        # SELECT * without limit (Python)
+        if grep -qE '\.select\(\s*["\x27]\*["\x27]\s*\)' "$FILE_PATH" 2>/dev/null; then
+            if ! grep -qE '\.limit\s*\(' "$FILE_PATH" 2>/dev/null; then
+                BLOCKED=true
+                BLOCK_MESSAGES+=("This query selects all columns without a limit. Add .limit() to prevent unbounded results.")
+                echo "[$TIMESTAMP] BLOCKED: SELECT * without .limit() in $FILE_PATH" >> "$AUDIT_LOG"
             fi
         fi
     fi
@@ -370,15 +444,31 @@ elif [[ "$MODE" == "deploy" ]]; then
             TABLE_NAME=$(echo "$FILE_CONTENT" | grep -ioE 'ALTER\s+TABLE\s+\S+' | head -1 | awk '{print $3}')
             if [[ -n "$TABLE_NAME" ]] && ! echo "$FILE_CONTENT" | grep -qiE "CREATE\s+TABLE.*$TABLE_NAME"; then
                 BLOCKED=true
-                BLOCK_MESSAGES+=("This migration modifies an existing table with ALTER TABLE. Create a new migration file for schema changes: supabase db diff -f <migration_name>.")
+                BLOCK_MESSAGES+=("This modifies an existing table with ALTER TABLE. Create a new migration file instead.")
                 echo "[$TIMESTAMP] BLOCKED: ALTER TABLE on existing table in $FILE_PATH" >> "$AUDIT_LOG"
             fi
         fi
 
-        # Missing RLS policy warning
+        # Missing RLS policy
         if echo "$FILE_CONTENT" | grep -qiE 'CREATE\s+TABLE'; then
             if ! echo "$FILE_CONTENT" | grep -qiE 'ALTER\s+TABLE.*ENABLE\s+ROW\s+LEVEL\s+SECURITY|CREATE\s+POLICY|ROW\s+LEVEL\s+SECURITY'; then
-                echo "[$TIMESTAMP] WARNING: Missing RLS policy in migration $FILE_PATH" >> "$AUDIT_LOG"
+                BLOCKED=true
+                BLOCK_MESSAGES+=("This table needs Row Level Security. Add ALTER TABLE ... ENABLE ROW LEVEL SECURITY and CREATE POLICY.")
+                echo "[$TIMESTAMP] BLOCKED: Missing RLS in migration $FILE_PATH" >> "$AUDIT_LOG"
+            fi
+        fi
+
+        # Unindexed FK
+        if echo "$FILE_CONTENT" | grep -qiE 'REFERENCES\s'; then
+            FK_COLUMNS=$(echo "$FILE_CONTENT" | grep -ioE '\w+\s+\w+\s+REFERENCES' | awk '{print $1}')
+            if [[ -n "$FK_COLUMNS" ]]; then
+                for col in $FK_COLUMNS; do
+                    if ! echo "$FILE_CONTENT" | grep -qiE "CREATE\s+INDEX.*$col|INDEX.*\($col"; then
+                        BLOCKED=true
+                        BLOCK_MESSAGES+=("Foreign key column '$col' needs an index for performance.")
+                        echo "[$TIMESTAMP] BLOCKED: Unindexed FK '$col' in $FILE_PATH" >> "$AUDIT_LOG"
+                    fi
+                done
             fi
         fi
     fi

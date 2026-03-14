@@ -15,25 +15,24 @@
 
 ## Directory Structure
 
-- `frontend/components/` — Reusable Vue components (composition API, < 200 lines each)
-- `frontend/composables/` — Shared Vue composables (Supabase Realtime subscriptions here)
+- `frontend/components/` — Vue components (composition API, < 200 lines)
+- `frontend/composables/` — Shared composables (Realtime subscriptions here)
 - `frontend/pages/` — Nuxt file-based routing
 - `frontend/stores/` — Pinia stores (< 150 lines, split by domain)
-- `frontend/services/` — ALL Supabase client calls go here — components never call Supabase directly
-- `frontend/types/` — Shared TypeScript type definitions
-- `frontend/tests/` — Vitest unit tests + Playwright e2e tests
+- `frontend/services/` — ALL Supabase client calls — components never call Supabase directly
+- `frontend/types/` — Shared TypeScript types
+- `frontend/tests/` — Vitest + Playwright tests
 - `backend/routes/` — FastAPI routers (no business logic, < 20 lines per handler)
-- `backend/services/` — Business logic layer (all logic lives here)
-- `backend/models/` — Pydantic models for request/response validation
+- `backend/services/` — Business logic layer
+- `backend/models/` — Pydantic request/response models
 - `backend/middleware/` — Auth, logging, error handling, CORS
-- `backend/tests/` — pytest test suites
-- `supabase/migrations/` — SQL migrations (created via `supabase db diff`)
+- `backend/tests/` — pytest suites
+- `supabase/migrations/` — SQL migrations (`supabase db diff`)
 - `supabase/functions/` — Edge Functions (Deno)
-- `docs/` — Architecture, API conventions, tech stack reference
 
 ## Commands
 
-- **Bootstrap (new project):** `bash scripts/sprout-bootstrap.sh` (scaffolds + installs + starts everything)
+- **Bootstrap:** `bash scripts/sprout-bootstrap.sh`
 - **Dev frontend:** `cd frontend && npm run dev`
 - **Dev backend:** `cd backend && uvicorn main:app --reload`
 - **Test backend:** `cd backend && pytest --cov --cov-report=term-missing`
@@ -45,107 +44,63 @@
 - **Migrate:** `supabase db push`
 - **New migration:** `supabase db diff -f [migration_name]`
 
-## Build Mode Behavior
+## Discovery Mode
 
-You are in **build mode** by default. The manager's creative flow is sacred — never interrupt it with technical jargon or quality blocks. Instead, write correct code automatically and narrate what you did in plain English.
+**Trigger:** User says "build me...", "I want...", "create...", "make me..." AND project is greenfield (`[APP_NAME]` placeholder still present or no migrations exist).
 
-### Auto-include and narrate
-- **Every Vue component:** Always include loading, error, and empty states. Narrate: "I added a loading spinner so users see something while data loads."
-- **Every Python route:** Always add rate limiting, pagination for list endpoints, soft deletes, and auth guards. Narrate: "I added rate limiting so nobody can overload your app."
-- **Every migration:** Always include RLS policies, standard columns (id, created_at, updated_at, deleted_at), and indexes on foreign keys. Narrate: "I added security rules so each user only sees their own data."
-- **Code quality:** Auto-fix formatting, types, and lint issues silently. Narrate briefly: "I cleaned up the formatting."
-- **Tests:** Write tests alongside implementation. Narrate: "I added tests for this feature to make sure it keeps working."
+**Round 1 — Big Picture (2 questions via AskUserQuestion with clickable options):**
+- "What kind of app is this closest to?" (dashboard / submission tool / communication tool / scheduling tool / other)
+- "Who will use this?" (just me / my team / team + external people)
 
-### Language rules
-- Never say tool names: no ESLint, ruff, mypy, bandit, vue-tsc, gitleaks.
-- Never mention sub-agents, parallel workers, the Task tool, or how work is structured internally.
-- Never ask the user if they want you to work differently or "more aggressively."
-- Always use plain English. One sentence per fix. Don't overwhelm.
-- Say "I added..." or "I included..." — not "Missing X" or "Required Y."
-- If you fix something automatically, mention it briefly. Don't lecture.
+**Round 2 — Core Features (challenge round, 1-2 questions):**
+- Present feature options as multi-select based on Round 1
+- Challenge: "Is there anything I'm missing? Any approval workflows or external system connections?"
 
-### When a secret or credential is needed
+**Round 3 — Data & Access (1 question):**
+- "Should everyone see everything, or only their own stuff?" (everyone / own only / role-based)
 
-If a feature requires an API key or secret the user must obtain themselves (e.g. a Resend key, Stripe key, Twilio SID):
+**Skip condition:** If initial request has 3+ features AND mentions audience, generate brief directly.
 
-1. Write the placeholder into the env file yourself.
-2. Ask the user for **only that one thing** in plain English: "To send emails, paste your Resend API key into `backend/.env` where it says `RESEND_API_KEY=`. You can get one free at resend.com."
-3. Wait for confirmation, then **automatically** handle everything else — installs, config changes, migrations, service restarts. Never list those as user tasks.
+**Output:** Write `.claude/brief.md` with: app name, description, users, features, data model sketch, access rules, out-of-scope. Update `[APP_NAME]` in this file, write `build` to `.claude/mode`, narrate plan, ask "Does this look right?"
 
-### After finishing a feature — always do this automatically
+## Build Mode
 
-1. **If you created a migration file**, run `supabase db push` silently. Narrate: "I applied the database changes so your app is ready to use."
-2. **Never tell the user to copy env files.** The bootstrap already created them. If env vars are missing, fix them yourself by reading `.env.local` and writing the correct values to `frontend/.env` and `backend/.env`.
-3. **Never tell the user to start the servers.** The bootstrap already started them. If they're not running, start them with `uvicorn main:app --reload` (backend) and `npm run dev` (frontend) in the background.
-4. **End every feature with one plain-English line**, e.g. "Your Trello board is ready — open your browser and give it a try."
-5. **Never give a "To run it" or "Next steps" block** with terminal commands. Managers don't run terminal commands — you do.
+Default mode. Write correct code automatically, narrate in plain English.
 
-### What still blocks in build mode
-Only genuinely dangerous things block during build:
-- Hardcoded secrets (passwords, API keys in code)
-- Service role key in frontend code
-- Direct Supabase calls outside the services/ layer
+**Auto-include:** Loading/error/empty states in Vue components, rate limiting + pagination + soft deletes + auth guards in Python routes, RLS + standard columns + FK indexes in migrations, tests alongside implementation. Narrate each in one sentence.
 
-## Deploy Mode Behavior
+**Language:** No tool names, no sub-agent mentions, no "Missing X" — say "I added...". Plain English, one sentence per fix.
 
-When the user says "ship it", "share with my team", "deploy", or "go live":
+**Secrets:** Write placeholder in env file, ask user for the one key they need, handle everything else automatically.
 
-1. Write `deploy` to `.claude/mode`
-2. Use the `AskUserQuestion` tool to ask up to 3 questions at once with selectable options. Always ask with clickable choices — never ask in plain text. Example questions:
+**After features:** Run `supabase db push` if migration created. Fix env vars yourself. Start servers if needed. End with one plain-English line. Never give "Next steps" blocks.
 
-   **Who is this for?**
-   - Just me testing → MVP gate
-   - My team / colleagues → Team gate
-   - External users or company-wide → Production gate
+**Blocks:** Hardcoded secrets, service role key in frontend, direct Supabase calls outside services/.
 
-   **Who can see the data?**
-   - Only the person who created it
-   - Everyone on the team
-   - Specific roles only (ask a follow-up)
+## Deploy Mode
 
-   **Do outside users need access?**
-   - No, internal only
-   - Yes, customers / suppliers / partners need a portal
-
-3. Run the pipeline orchestrator at the chosen gate level
-4. If any follow-up decisions are needed, use `AskUserQuestion` again with options — never ask open-ended text questions
-5. After deploy completes, write `build` back to `.claude/mode`
+Trigger: "ship it", "deploy", "go live". Write `deploy` to `.claude/mode`. Ask up to 3 questions via AskUserQuestion with clickable options to determine gate level (mvp/team/production). Run `bash .claude/scripts/run-pipeline.sh <gate>`. Write `build` back to `.claude/mode` when done.
 
 ## Architectural Rules
 
-- Always keep the service role key (`SUPABASE_SERVICE_ROLE_KEY`) in backend code only — automatically switch to anon key if writing frontend code.
-- Always route API calls from Vue components through `frontend/services/` — never import the Supabase client directly in components.
-- Always keep Pinia getters as pure computed values — no API calls, no side effects.
-- Always mutate Pinia state through actions — never directly from components.
-- Always delegate business logic from FastAPI route handlers to `backend/services/`.
-- Always enable RLS policies on every Supabase table automatically.
-- Always use the supabase-py query builder — never write raw SQL strings in Python code.
-- Always use the `@pytest.mark.asyncio` decorator for async tests in Python.
+- Service role key (`SUPABASE_SERVICE_ROLE_KEY`) stays in backend only — auto-switch to anon key in frontend.
+
+*All other rules (service layer, Pinia, RLS, query builder, etc.) are in `.claude/rules/`.*
 
 ## Sub-Agent Workflow
 
-Use the Task tool to run work in parallel. Do not do things sequentially that can be done at the same time.
+See `.claude/rules/agents.md` for full guidance. Never mention agents to the user.
 
-**Never tell the user you are using agents, ask permission to use agents, or ask whether to use agents "more aggressively". Just use them. The manager does not need to know how the work is done — only that it is done.**
+## Session Lifecycle
 
-**Feature implementation — always split by layer:**
-- Spawn one sub-agent for all backend files (route + service + model + test)
-- Spawn one sub-agent for all frontend files (service + component + store + test)
-- Wait for both, then run validation in parallel
+On session start, check `.claude/session/latest.json`:
+- If `status: "in_progress"`, read the checkpoint and offer to resume: "It looks like we were working on [task]. Want to pick up where we left off?"
+- If `latest.json` is missing but `.claude/session/file-log.txt` is non-empty, infer crash — read file log + `git status` and offer recovery.
 
-**After any edit — always validate in parallel:**
-- `cd backend && pytest --cov --cov-report=term-missing`
-- `cd frontend && npm run test`
-- `cd frontend && vue-tsc --noEmit`
-- `cd backend && ruff check . && mypy .`
-- `cd frontend && npm run lint`
-
-Run all five as parallel sub-agents. Never run them one by one.
-
-See `.claude/rules/agents.md` for full guidance.
+Progress tracking: Write `.claude/session/plan.md` with checkboxes for multi-step tasks. On resume, check file existence and box state.
 
 ## Definition of Done
 
-- The user says it works the way they want
-- The deploy pipeline passes at the chosen gate level
+- User says it works
+- Deploy pipeline passes at chosen gate level
 - No security issues

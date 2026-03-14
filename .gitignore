@@ -1,6 +1,7 @@
 # Claude Code governance — machine-local files
 .claude/developer.conf
 .claude/tmp/
+.claude/session/
 .claude/audit.log
 CLAUDE.local.md
 

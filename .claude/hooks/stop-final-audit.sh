@@ -34,19 +34,16 @@ fi
 
 # --- Gitleaks full scan (always runs in both modes) ---
 if command -v gitleaks &>/dev/null; then
-    echo "Running gitleaks scan..." >&2
     GITLEAKS_OUTPUT=$(gitleaks detect --source=. 2>&1)
     GITLEAKS_EXIT=$?
     if [[ $GITLEAKS_EXIT -ne 0 ]]; then
-        echo "WARNING: Gitleaks found potential secrets in the repository." >&2
-        echo "$GITLEAKS_OUTPUT" | head -20 >&2
         echo "[$TIMESTAMP] WARNING: Gitleaks detected secrets" >> "$AUDIT_LOG"
+        echo "$GITLEAKS_OUTPUT" >> "$AUDIT_LOG"
         ((WARNINGS++))
     else
         echo "[$TIMESTAMP] OK: Gitleaks scan clean" >> "$AUDIT_LOG"
     fi
 else
-    echo "WARNING: gitleaks not installed. Install it for secret scanning: https://github.com/gitleaks/gitleaks#installing" >&2
     echo "[$TIMESTAMP] SKIPPED: gitleaks not installed" >> "$AUDIT_LOG"
 fi
 
@@ -55,13 +52,11 @@ if [[ "$MODE" == "deploy" ]]; then
 
     # --- npm audit ---
     if [[ -f "frontend/package-lock.json" ]] && command -v npm &>/dev/null; then
-        echo "Running npm audit..." >&2
         NPM_AUDIT=$(cd frontend && npm audit --audit-level=high 2>&1)
         NPM_EXIT=$?
         if [[ $NPM_EXIT -ne 0 ]]; then
-            echo "WARNING: npm audit found high-severity vulnerabilities in frontend dependencies." >&2
-            echo "$NPM_AUDIT" | tail -10 >&2
             echo "[$TIMESTAMP] WARNING: npm audit found vulnerabilities" >> "$AUDIT_LOG"
+            echo "$NPM_AUDIT" >> "$AUDIT_LOG"
             ((WARNINGS++))
         else
             echo "[$TIMESTAMP] OK: npm audit clean" >> "$AUDIT_LOG"
@@ -71,21 +66,18 @@ if [[ "$MODE" == "deploy" ]]; then
     # --- pip-audit ---
     if [[ -f "backend/requirements.txt" || -f "requirements.txt" ]]; then
         if command -v pip-audit &>/dev/null; then
-            echo "Running pip-audit..." >&2
             REQ_FILE="requirements.txt"
             [[ -f "backend/requirements.txt" ]] && REQ_FILE="backend/requirements.txt"
             PIP_AUDIT=$(pip-audit -r "$REQ_FILE" 2>&1)
             PIP_EXIT=$?
             if [[ $PIP_EXIT -ne 0 ]]; then
-                echo "WARNING: pip-audit found vulnerabilities in Python dependencies." >&2
-                echo "$PIP_AUDIT" | tail -10 >&2
                 echo "[$TIMESTAMP] WARNING: pip-audit found vulnerabilities" >> "$AUDIT_LOG"
+                echo "$PIP_AUDIT" >> "$AUDIT_LOG"
                 ((WARNINGS++))
             else
                 echo "[$TIMESTAMP] OK: pip-audit clean" >> "$AUDIT_LOG"
             fi
         else
-            echo "WARNING: pip-audit not installed. Install: pip install pip-audit" >&2
             echo "[$TIMESTAMP] SKIPPED: pip-audit not installed" >> "$AUDIT_LOG"
         fi
     fi
@@ -107,9 +99,8 @@ if [[ "$MODE" == "deploy" ]]; then
             done <<< "$CHANGED_FILES"
 
             if [[ $TODO_TOTAL -gt 0 ]]; then
-                echo "WARNING: $TODO_TOTAL TODO/FIXME markers found in changed files:" >&2
-                echo -e "$TODO_FILES" >&2
                 echo "[$TIMESTAMP] WARNING: $TODO_TOTAL TODO/FIXME in changed files" >> "$AUDIT_LOG"
+                echo -e "$TODO_FILES" >> "$AUDIT_LOG"
                 ((WARNINGS++))
             else
                 echo "[$TIMESTAMP] OK: No TODO/FIXME in changed files" >> "$AUDIT_LOG"
@@ -121,21 +112,17 @@ if [[ "$MODE" == "deploy" ]]; then
         if [[ -n "$NEW_FILES" ]]; then
             MISSING_TESTS=""
             while IFS= read -r file; do
-                # Skip test files, config files, migrations, docs
                 if echo "$file" | grep -qE '(test_|\.test\.|\.spec\.|__pycache__|migrations/|docs/|\.claude/|\.config)'; then
                     continue
                 fi
-                # Only check source files
                 if echo "$file" | grep -qE '\.(py|ts|tsx|js|jsx|vue)$'; then
                     BASE_NAME=$(basename "$file" | sed 's/\.\(py\|ts\|tsx\|js\|jsx\|vue\)$//')
                     TEST_EXISTS=false
 
-                    # Check Python test
                     if echo "$file" | grep -qE '\.py$'; then
                         find backend/tests -name "test_${BASE_NAME}.py" 2>/dev/null | grep -q . && TEST_EXISTS=true
                     fi
 
-                    # Check TS/Vue test
                     if echo "$file" | grep -qE '\.(ts|tsx|js|jsx|vue)$'; then
                         find frontend/tests -name "${BASE_NAME}.test.*" -o -name "${BASE_NAME}.spec.*" 2>/dev/null | grep -q . && TEST_EXISTS=true
                     fi
@@ -147,23 +134,47 @@ if [[ "$MODE" == "deploy" ]]; then
             done <<< "$NEW_FILES"
 
             if [[ -n "$MISSING_TESTS" ]]; then
-                echo "WARNING: New source files missing corresponding test files:" >&2
-                echo -e "$MISSING_TESTS" >&2
                 echo "[$TIMESTAMP] WARNING: New files missing tests" >> "$AUDIT_LOG"
+                echo -e "$MISSING_TESTS" >> "$AUDIT_LOG"
                 ((WARNINGS++))
             fi
         fi
     fi
 
 else
-    echo "[$TIMESTAMP] BUILD MODE: Skipped deploy-only audit checks (npm audit, pip-audit, TODO, missing tests)" >> "$AUDIT_LOG"
+    echo "[$TIMESTAMP] BUILD MODE: Skipped deploy-only checks" >> "$AUDIT_LOG"
 fi
 
-# --- Final summary ---
+# --- Session checkpoint ---
+SESSION_DIR=".claude/session"
+mkdir -p "$SESSION_DIR" 2>/dev/null || true
+
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+GIT_STATUS=$(git status --short 2>/dev/null || echo "")
+LAST_COMMIT=$(git log -1 --format="%h %s" 2>/dev/null || echo "none")
+FILES_MODIFIED="[]"
+if [[ -f "$SESSION_DIR/file-log.txt" ]]; then
+    FILES_MODIFIED=$(sort -u "$SESSION_DIR/file-log.txt" | head -100 | sed 's/"/\\"/g' | awk 'BEGIN{printf "["} NR>1{printf ","} {printf "\"%s\"", $0} END{printf "]"}')
+fi
+
+cat > "$SESSION_DIR/latest.json" << CHECKPOINT_EOF
+{
+  "session_id": "$(date '+%Y%m%d-%H%M%S')",
+  "timestamp": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
+  "status": "completed",
+  "task_brief": "",
+  "files_modified": $FILES_MODIFIED,
+  "git_branch": "$GIT_BRANCH",
+  "git_status": $(echo "$GIT_STATUS" | head -20 | sed 's/"/\\"/g' | awk 'BEGIN{printf "\""} NR>1{printf "\\n"} {printf "%s", $0} END{printf "\""}'),
+  "last_commit": "$LAST_COMMIT"
+}
+CHECKPOINT_EOF
+echo "[$TIMESTAMP] Session checkpoint written to $SESSION_DIR/latest.json" >> "$AUDIT_LOG"
+
+# --- Final summary (single line to stderr) ---
 echo "" >> "$AUDIT_LOG"
 echo "[$TIMESTAMP] FINAL AUDIT COMPLETE ($MODE mode): $WARNINGS warning(s)" >> "$AUDIT_LOG"
-echo "" >&2
-echo "=== FINAL AUDIT COMPLETE ($MODE mode): $WARNINGS warning(s) ===" >&2
+echo "Audit complete ($MODE mode): $WARNINGS warning(s)" >&2
 
-# Always exit 0 — stop hooks should never block (too late to undo)
+# Always exit 0 — stop hooks should never block
 exit 0

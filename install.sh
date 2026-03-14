@@ -109,21 +109,20 @@ else
   cat >> "$GITIGNORE" <<'GITIGNORE_BLOCK'
 
 # ── Managers' Agent Fleet (do not commit) ──
-# Internal AI config — never commit
+# AI toolkit config — hooks, rules, agents, scripts, session state
 .claude/
+# Project instructions (toolkit-managed, not project source)
 CLAUDE.md
 CLAUDE.md.template
 CLAUDE.local.md
-# Runtime mode and gate config — environment-specific
-.claude/mode
-.claude/deploy-gates.json
-# Docs are reference material, not project deliverables
+# Reference docs (toolkit material, not project deliverables)
 docs/architecture.md
 docs/api-conventions.md
 docs/done-checklist.md
 docs/tech-stack.md
 docs/changelog-guide.md
 docs/enterprise-features.md
+# Toolkit scripts
 scripts/sprout-init.sh
 scripts/sprout-bootstrap.sh
 # Installer artefacts

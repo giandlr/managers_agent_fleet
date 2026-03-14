@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Shared mode helper — sourced by all hooks
-# Modes: "build" (default) = security-only blocks, "deploy" = full enforcement
+# Modes: "build" (default), "deploy" (full enforcement), "plan" (discovery phase)
 
 get_mode() {
   cat "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")/.claude/mode" 2>/dev/null || echo "build"
@@ -9,6 +9,14 @@ get_mode() {
 friendly_block() {
   echo "" >&2
   echo "  $1" >&2
+  echo "" >&2
+  exit 2
+}
+
+friendly_block_with_action() {
+  echo "" >&2
+  echo "  BLOCKED: $1" >&2
+  echo "  INSTEAD: $2" >&2
   echo "" >&2
   exit 2
 }
