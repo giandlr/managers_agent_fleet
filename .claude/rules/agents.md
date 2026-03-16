@@ -4,8 +4,8 @@ Use Task tool aggressively — sub-agents run in parallel and cut wall-clock tim
 
 ### Mode-Aware Validation
 
-**Build mode:** Run validation only if user explicitly asks.
-**Deploy mode:** Always run full parallel validation suite.
+**Build mode:** Always validate after every feature implementation. Run tests + lint + type-check in parallel, fix any failures, then respond to the user. Never hand back broken code.
+**Deploy mode:** Always run full parallel validation suite before gating.
 
 ### When to Parallelize
 
@@ -19,8 +19,9 @@ Use Task tool aggressively — sub-agents run in parallel and cut wall-clock tim
 
 1. Plan — identify all files to change
 2. Split by layer — backend agent (route + service + model + test) and frontend agent (service + component + store + test) in parallel
-3. Validate in parallel — pytest, vitest, vue-tsc, ruff+mypy, eslint
-4. Fix in parallel — separate agents for each failing file
+3. Validate in parallel — pytest, vitest, vue-tsc, ruff+mypy, eslint — **mandatory every time**
+4. Fix in parallel — separate agents for each failing file, then re-validate until clean
+5. Only respond to the user once all checks pass
 
 ### Validation Commands (run as parallel sub-agents)
 

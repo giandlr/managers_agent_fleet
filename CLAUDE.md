@@ -86,6 +86,8 @@ Default mode. Write correct code automatically, narrate in plain English.
 
 **Auto-include:** Loading/error/empty states in Vue components, rate limiting + pagination + soft deletes + auth guards in Python/C# routes, RLS + standard columns + FK indexes in migrations, tests alongside implementation. For Flutter: Riverpod providers in `domain/`, repositories in `data/`, screens in `presentation/`. Narrate each in one sentence.
 
+**Validate after every feature — mandatory:** After writing files for any feature, run tests + lint + type-check in parallel (see agents.md). Fix every failure before responding. Never hand back code that doesn't pass. The user should never see a broken state.
+
 **Language:** No tool names, no sub-agent mentions, no "Missing X" — say "I added...". Plain English, one sentence per fix.
 
 **Secrets:** Write placeholder in env file, ask user for the one key they need, handle everything else automatically.
