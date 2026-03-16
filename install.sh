@@ -139,9 +139,13 @@ GITIGNORE_BLOCK
   echo "  Updated .gitignore — toolkit files will not be committed."
 fi
 
-# ── 4. Create tmp directory ──────────────────────────
+# ── 4. Create tmp directory and stamp version ────────
 
 mkdir -p "$PROJECT_DIR/.claude/tmp"
+
+if [ -f "$SCRIPT_DIR/VERSION" ]; then
+  cp "$SCRIPT_DIR/VERSION" "$PROJECT_DIR/.claude/version"
+fi
 
 # ── 5. Configure global Claude Code permissions ──────
 #

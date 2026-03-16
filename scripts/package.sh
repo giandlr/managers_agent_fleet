@@ -26,6 +26,8 @@ mkdir -p "$STAGE"
 
 # Copy distributable files into the staging directory
 cp install.sh "$STAGE/"
+cp update.sh "$STAGE/"
+cp VERSION "$STAGE/"
 cp CLAUDE.md "$STAGE/"
 cp CHANGELOG.md "$STAGE/"
 cp README.md "$STAGE/"
