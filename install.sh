@@ -44,12 +44,13 @@ done
 cp "$SCRIPT_DIR/.claude/settings.json" "$PROJECT_DIR/.claude/settings.json"
 
 # CLAUDE.md (project root — only if not already present)
+# This file is intentionally tiny — just app name + project notes.
+# All framework rules live in .claude/rules/ and update automatically.
 if [ ! -f "$PROJECT_DIR/CLAUDE.md" ]; then
   cp "$SCRIPT_DIR/CLAUDE.md" "$PROJECT_DIR/CLAUDE.md"
   echo "  Created CLAUDE.md — edit [APP_NAME] with your app's name."
 else
-  echo "  CLAUDE.md already exists — skipped. Template saved as CLAUDE.md.template"
-  cp "$SCRIPT_DIR/CLAUDE.md" "$PROJECT_DIR/CLAUDE.md.template"
+  echo "  CLAUDE.md already exists — skipped (your app name is safe)."
 fi
 
 # CHANGELOG.md (only if not already present)
@@ -120,7 +121,6 @@ else
 .claude/
 # Project instructions (toolkit-managed, not project source)
 CLAUDE.md
-CLAUDE.md.template
 CLAUDE.local.md
 # Reference docs (toolkit material, not project deliverables)
 docs/architecture.md
