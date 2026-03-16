@@ -651,7 +651,7 @@
 
   <div class="header">
     <div class="logo"><img src="../logo-01.svg" alt="Aulendil"></div>
-    <div class="slide-counter" id="slideCounter">1 / 26</div>
+    <div class="slide-counter" id="slideCounter">1 / 32</div>
   </div>
 
   <div class="nav-dots" id="navDots"></div>
@@ -1843,8 +1843,89 @@
       </div>
     </div>
 
+    <!-- ==================== SLIDE: UPDATING THE FRAMEWORK ==================== -->
+    <div class="slide" data-slide="29">
+      <div class="slide-scroll">
+        <h2>Updating the Framework</h2>
+        <p class="subtitle" style="margin-bottom:16px;">When a new version of Aulendil is released, updating your project takes two commands &mdash; no reinstall, no data loss.</p>
+
+        <div class="grid-2" style="gap:16px; margin-bottom:16px;">
+          <div class="card c-green" style="padding:20px;">
+            <h3 style="color:#1a8a00; font-size:14px; margin-bottom:8px;">How to update</h3>
+            <div style="background:#f8f8f8; border-radius:8px; padding:14px; font-family:monospace; font-size:13px; color:var(--dark-gray); line-height:1.8; margin-bottom:10px;">
+              unzip aulendil.zip<br>
+              bash aulendil/update.sh
+            </div>
+            <p style="font-size:13px;">That's it. The terminal shows the before and after version when it's done.</p>
+          </div>
+          <div class="card" style="padding:20px; background:rgba(22,121,250,0.06);">
+            <h3 style="color:var(--blue); font-size:14px; margin-bottom:8px;">What gets updated</h3>
+            <ul class="bullet-list mt-8" style="font-size:13px;">
+              <li>Framework scripts and hooks</li>
+              <li>Rules, agents, reviewers</li>
+              <li>Bootstrap and stop scripts</li>
+              <li>Reference docs and manual</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="padding:16px; background:var(--bg-lavender);">
+          <h3 style="color:var(--purple); font-size:14px; margin-bottom:10px;">What is <em>never</em> touched</h3>
+          <div class="grid-2" style="gap:12px;">
+            <ul class="bullet-list" style="font-size:13px;">
+              <li><strong>CLAUDE.md</strong> &mdash; your app name stays exactly as you set it</li>
+              <li><strong>.env</strong> &mdash; all your secrets are safe</li>
+            </ul>
+            <ul class="bullet-list" style="font-size:13px;">
+              <li><strong>frontend/, backend/, mobile/</strong> &mdash; all your code is untouched</li>
+              <li><strong>.claude/mode</strong> &mdash; build/deploy state is preserved</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="big-quote mt-16">
+          No re-bootstrap needed. The app keeps running. You get the new features immediately.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE: WHAT'S NEW IN V1.5 ==================== -->
+    <div class="slide" data-slide="30">
+      <div class="slide-scroll">
+        <h2>What's New in <span class="highlight-green">v1.5</span></h2>
+        <p class="subtitle" style="margin-bottom:16px;">Four improvements focused on a smoother build experience and easier long-term maintenance.</p>
+
+        <div class="grid-2" style="gap:14px; margin-bottom:14px;">
+          <div class="card" style="padding:16px; background:var(--bg-green);">
+            <span class="card-label" style="color:#1a8a00;">New</span>
+            <h3 style="font-size:14px; margin-bottom:6px;">Framework Updater</h3>
+            <p style="font-size:13px;"><code style="font-size:12px;">bash aulendil/update.sh</code> &mdash; drop the new zip in, run one command, get the latest framework improvements without touching your app or config.</p>
+          </div>
+          <div class="card" style="padding:16px; background:var(--bg-green);">
+            <span class="card-label" style="color:#1a8a00;">New</span>
+            <h3 style="font-size:14px; margin-bottom:6px;">Background Server Logs</h3>
+            <p style="font-size:13px;">Bootstrap now starts servers in the background. The terminal is immediately usable. Logs go to <code style="font-size:12px;">logs/backend.log</code> and <code style="font-size:12px;">logs/frontend.log</code>. Stop cleanly with <code style="font-size:12px;">bash scripts/stop.sh</code>.</p>
+          </div>
+          <div class="card" style="padding:16px; background:rgba(22,121,250,0.06);">
+            <span class="card-label">Improved</span>
+            <h3 style="font-size:14px; margin-bottom:6px;">Mandatory Build Validation</h3>
+            <p style="font-size:13px;">After every feature, Claude now runs tests, linting, and type checks automatically &mdash; and fixes any failures before responding. You never see broken code.</p>
+          </div>
+          <div class="card" style="padding:16px; background:rgba(22,121,250,0.06);">
+            <span class="card-label">Improved</span>
+            <h3 style="font-size:14px; margin-bottom:6px;">CLAUDE.md is Now Project-Only</h3>
+            <p style="font-size:13px;">Framework rules moved to <code style="font-size:12px;">.claude/rules/workflow.md</code>, which updates automatically. Your <code style="font-size:12px;">CLAUDE.md</code> is now just your app name &mdash; 6 lines, never overwritten.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding:12px; background:var(--bg-lavender);">
+          <p style="font-size:13px; text-align:center;"><strong>Already have a project on v1.4?</strong> Run <code style="font-size:12px;">bash aulendil/update.sh</code> to get all four improvements now. No rebuild needed.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== SLIDE: CLOSING ==================== -->
-    <div class="slide closing-slide" data-slide="29">
+    <div class="slide closing-slide" data-slide="31">
       <div class="closing-line">Build freely. Deploy safely. Quality is automatic.</div>
       <div class="closing-line" style="margin-top: 20px;">Start with MVP. Graduate to production. At your own pace.</div>
       <div class="closing-line" style="color: var(--blue);">All invisible. All automatic. All in plain English.</div>

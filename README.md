@@ -77,12 +77,14 @@ your-project/
 │   ├── agents/                 # Specialist AI workers (tests, pipeline, review)
 │   ├── hooks/                  # Real-time guards (security, quality)
 │   │   └── lib/                # Shared hook utilities
-│   ├── rules/                  # Domain-specific standards (API, auth, DB, frontend)
+│   ├── rules/                  # Domain-specific standards (API, auth, DB, frontend, workflow)
+│   │   └── workflow.md         # Modes, commands, tech stack — updated on every framework upgrade
 │   ├── reviewers/              # Opus code reviewer system prompt
 │   ├── scripts/                # Pipeline scripts (security, smoke test, review, release)
 │   ├── session/                # Crash recovery checkpoints (gitignored)
 │   ├── settings.json           # Claude Code permissions
 │   ├── mode                    # Current mode: "build" or "deploy"
+│   ├── version                 # Installed framework version (e.g. 1.5.0)
 │   └── deploy-gates.json       # Gate level definitions (MVP/Team/Production)
 ├── docs/
 │   ├── architecture.md         # System architecture reference
@@ -92,15 +94,18 @@ your-project/
 │   ├── enterprise-features.md  # Enterprise feature requirements
 │   └── changelog-guide.md      # Changelog conventions
 ├── scripts/
-│   └── bootstrap.sh     # One-command project setup
+│   ├── bootstrap.sh            # One-command project setup
+│   └── stop.sh                 # Stop background servers
 ├── manual/
-│   └── guide.html       # Visual guide (open in browser, 20 slides)
-├── CLAUDE.md                   # Project rules for Claude Code
+│   └── guide.html              # Visual guide (open in browser, 32 slides)
+├── CLAUDE.md                   # App name + project notes (6 lines — never overwritten by updates)
 ├── CHANGELOG.md                # Auto-maintained release history
+├── VERSION                     # Framework version number
+├── update.sh                   # Framework updater (safe in-place upgrade)
 └── install.sh                  # Toolkit installer
 ```
 
-> All files under `.claude/`, `CLAUDE.md`, `docs/`, and `scripts/` are gitignored after install. Only your app's source code gets committed.
+> All toolkit files (`.claude/`, `CLAUDE.md`, `docs/`, `scripts/`, `update.sh`, `VERSION`) are gitignored after install. Only your app's source code gets committed.
 
 ---
 
@@ -132,7 +137,7 @@ All technology decisions are defined in `docs/tech-stack.md`.
 | **1. Scaffold** | Creates Nuxt 3 frontend, FastAPI backend, and Supabase directory structure |
 | **2. Configure** | Installs all dependencies, creates config files, sets up dev plugins |
 | **3. Supabase** | Initializes and starts local Supabase, extracts credentials, seeds a dev user |
-| **4. Start** | Launches backend and frontend dev servers |
+| **4. Start** | Launches backend and frontend dev servers in the background — output goes to `logs/backend.log` and `logs/frontend.log`, terminal stays usable |
 | **5. Dev Tools** | Installs gitleaks, k6, and sets file permissions |
 
 ### Prerequisites
@@ -142,6 +147,28 @@ All technology decisions are defined in `docs/tech-stack.md`.
 - **Docker** (for local Supabase)
 
 Docker is optional during build mode — the app works as a UI shell without a database, showing empty states and an informational banner. Supabase is required at the Team and Production deploy levels.
+
+---
+
+## Updating the Framework
+
+When a new version of Aulendil is released, update any existing project with three commands:
+
+```bash
+unzip aulendil.zip
+bash aulendil/update.sh
+```
+
+The updater replaces only framework-owned files — scripts, hooks, rules, agents, reviewers. It never touches:
+
+- `CLAUDE.md` — your app name and project notes stay intact
+- `.env` — your secrets are safe
+- `.claude/mode` — your current build/deploy state is preserved
+- All of `frontend/`, `backend/`, `mobile/` — your code is untouched
+
+After the update, no re-bootstrap is needed. The terminal shows "Updated: v1.4.0 → v1.5.0" when complete.
+
+To check which version a project is on: `cat .claude/version`
 
 ---
 
@@ -183,8 +210,10 @@ An independent AI reviewer (Claude Opus) examines the code with zero knowledge o
 | Tag a release | `bash .claude/scripts/tag-release.sh v1.0.0` |
 | Record deployment | `bash .claude/scripts/mark-deployed.sh production` |
 | Run pipeline | `bash .claude/scripts/run-pipeline.sh [mvp\|team\|production]` |
+| Stop servers | `bash scripts/stop.sh` |
 | Security scan | `bash .claude/scripts/security-scan.sh` |
 | Repackage toolkit | `bash scripts/package.sh` |
+| Update framework | `bash aulendil/update.sh` |
 
 ---
 
@@ -288,7 +317,7 @@ The dev user (`dev@aulendil.local`) is automatically assigned the admin role. Cl
 
 ## The Manual
 
-Open `manual/guide.html` in any browser for a visual walkthrough of the entire system (30 slides). Navigate with arrow keys or click the dots. Works offline — no external dependencies.
+Open `manual/guide.html` in any browser for a visual walkthrough of the entire system (32 slides). Navigate with arrow keys or click the dots. Works offline — no external dependencies.
 
 ---
 
@@ -296,7 +325,8 @@ Open `manual/guide.html` in any browser for a visual walkthrough of the entire s
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
-- **v1.4** — Flutter mobile (iOS + Android) option, C# / ASP.NET Core 8 backend option, updated manual (30 slides)
+- **v1.5** — Framework updater (`update.sh`), version tracking, background server logs, mandatory post-feature validation, `CLAUDE.md` reduced to project identity only (framework rules now in `.claude/rules/workflow.md` — updated automatically)
+- **v1.4** — Flutter mobile (iOS + Android) option, C# / ASP.NET Core 8 backend option, updated manual (32 slides)
 - **v1.3** — Azure deployment target (company server), dual-mode auth (Google SSO via OAuth2 Proxy), per-app schema isolation, 4 new Azure scripts, updated manual (26 slides)
 - **v1.2** — Cloud deployment (Vercel + Supabase Cloud), Playwright e2e testing with starter patterns, RBAC foundation (4 default roles), IT handoff doc generator, updated manual (22 slides)
 - **v1.1** — Discovery mode, session recovery, compressed instructions (~56% token reduction), gate-aware deploy pipeline, 6 new hook detections, two-part error messages, updated manual (20 slides)
