@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- UNRELEASED_INSERT_POINT -->
 
+## [v1.7.1] — 2026-03-18
+
+### Changed
+- **Frontend design quality (always-on):** `.claude/rules/frontend.md` now embeds the full set of production design principles — typography, colour, motion, spatial composition, depth, and a hard NEVER list — directly in the rule file. Because `frontend.md` has a `globs` header scoped to all frontend files, these principles are automatically in context whenever Claude touches any page, component, composable, or store. No skill invocation required.
+- **Workflow rule simplified:** Build Mode's frontend-design note updated to remove the "invoke the skill" instruction; it now says: ask one brand question at project start, commit to a bold visual direction, then apply it consistently across all components.
+
 ## [v1.7.0] — 2026-03-17
 
 ### Added

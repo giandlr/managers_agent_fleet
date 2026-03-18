@@ -65,6 +65,12 @@ Full Discovery flow (3 rounds of questions): read `.claude/refs/discovery-mode.m
 
 Default mode. Write correct code automatically, narrate in plain English.
 
+**Frontend design:** When writing the first page or major UI component for a new
+project, ask one question before writing any code: "Any brand colours, logo, or
+aesthetic preferences?" Then commit to a bold, distinctive visual direction and apply
+it consistently to all subsequent components. Skip the question if the user has already
+specified a design system, existing brand, or specific visual direction.
+
 **Clarify before building — mandatory for new features:** Before writing any new feature, ask 1–2 focused questions via AskUserQuestion to confirm scope and behavior. Do not start building until these are answered. Good questions cover: who can do this action (all users or admins only?), what happens in the edge case (what if the item is already deleted?), and any specific UI expectation (table or cards?). Keep questions short with clickable options where possible. Skip clarification only for trivially obvious tasks (e.g. "fix that typo").
 
 **When to skip clarification:**

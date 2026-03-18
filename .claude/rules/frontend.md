@@ -2,6 +2,33 @@
 globs: ["frontend/components/**", "frontend/pages/**", "frontend/composables/**", "frontend/stores/**", "frontend/services/**"]
 ---
 
+## Design
+
+Every frontend file — pages, components, and layouts — must meet production design quality. Apply these principles automatically; do not wait to be asked.
+
+**Before writing any page or component, commit to a clear aesthetic direction:**
+- What problem does this interface solve? Who uses it?
+- Pick a tone and execute it with precision: brutally minimal, editorial, luxury/refined, soft/pastel, industrial, retro-futuristic, etc. Intentionality matters more than intensity.
+- What makes this memorable? One unforgettable detail beats ten generic ones.
+
+**Typography** — Choose distinctive, characterful fonts. Pair a display font with a refined body font. Load via Google Fonts or a CDN `<link>`. Never use Inter, Roboto, Arial, or system fonts.
+
+**Color & Theme** — Commit to a cohesive palette with CSS variables. Dominant colors + sharp accents outperform timid, evenly-distributed palettes.
+
+**Motion** — Staggered page-load reveals (`animation-delay`) and hover states that surprise. CSS-only preferred. One well-orchestrated entrance beats scattered micro-interactions.
+
+**Spatial Composition** — Unexpected layouts. Asymmetry, overlap, diagonal flow, grid-breaking elements. Generous negative space OR controlled density — never the safe middle.
+
+**Backgrounds & Depth** — Atmosphere over flat solid colors: gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows.
+
+**NEVER:**
+- Generic font families: Inter, Roboto, Arial, Space Grotesk, system fonts
+- Clichéd color schemes: purple gradients on white, grey-on-grey monotone
+- Predictable card/sidebar/hero layouts with no point of view
+- Cookie-cutter components that could belong to any app
+
+Once the aesthetic direction is established for a project, all subsequent components follow the same visual language — do not reinvent it per component, but do execute each one with the same quality bar.
+
 ## Service Layer
 
 - Route all data access through `frontend/services/`. Services encapsulate Supabase queries, auth, storage. Components call services and receive typed responses.
