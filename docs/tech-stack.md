@@ -206,7 +206,8 @@ BOOTSTRAP_DESCRIPTION: |
   Scaffolds Nuxt 3 frontend + FastAPI backend + Supabase local,
   installs all dependencies and dev tools, starts all services.
   After bootstrap: frontend at localhost:3000, backend at localhost:8000,
-  Supabase Studio at localhost:54323.
+  Supabase Studio at a project-specific port (printed at end of bootstrap).
+  Each project gets an isolated port block so multiple apps can run simultaneously.
   Replaces the previous init.sh (which only installed tools).
 
 ---

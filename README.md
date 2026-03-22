@@ -35,7 +35,9 @@ After bootstrap completes, your app is already running:
 | Frontend        | http://localhost:3000         |
 | Backend API     | http://localhost:8000         |
 | API Docs        | http://localhost:8000/docs    |
-| Supabase Studio | http://localhost:54323        |
+| Supabase Studio | shown in bootstrap output (unique per project) |
+
+Each project gets its own isolated Supabase instance on a unique port — multiple apps can run on the same machine without touching each other's data. The exact Studio URL is printed at the end of bootstrap.
 
 A development user (`dev@aulendil.local` / `devpassword123`) is seeded automatically for local testing.
 

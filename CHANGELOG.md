@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- UNRELEASED_INSERT_POINT -->
 
+## [v1.7.3] — 2026-03-22
+
+### Fixed
+- **Multi-project database isolation:** Every project now gets a unique Supabase `project_id` and isolated port block (API, DB, Studio, Inbucket) written into `supabase/config.toml` before `supabase start` runs. Previously, all projects used the same default ports (54321–54324), so bootstrapping a second app would conflict with — and potentially overwrite or corrupt — an existing running project's database. A global port registry at `~/.aulendil/port-registry` tracks assignments across projects (e.g. project 1 = 54321, project 2 = 54421), ensuring each app's Docker containers are completely isolated. The fix is idempotent: re-running bootstrap on an existing project reuses its registered ports.
+
 ## [v1.7.2] — 2026-03-18
 
 ### Fixed
